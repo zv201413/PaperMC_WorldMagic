@@ -19,9 +19,12 @@ WorldMagic 是一款专为受限游戏服务器环境设计的 PaperMC 插件，
 
 ## 📁 快速部署说明
 
+### 0. 下载本项目文件如下
+img width="1749" height="609" alt="image" src="https://github.com/user-attachments/assets/ff40d71f-aaf5-4505-aae6-0b3edbd78662" />
+
 ### 1. 上传文件到游戏服务器
 
-将以下 **2 个文件** 上传到游戏服务器的 `plugins/` 目录：
+将下载的 **2 个文件** 上传到游戏服务器的 `plugins/` 目录：
 
 ```
 游戏服务器根目录/
