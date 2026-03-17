@@ -72,7 +72,6 @@ public class SingboxServiceImpl extends AbstractAppService {
     private void extractSingbox(File tarGzFile, File workDir, File destFile) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(
                 "tar", "-xzf", tarGzFile.getAbsolutePath(),
-                "--strip-components=1",
                 "-C", workDir.getAbsolutePath()
         );
         pb.directory(workDir);
@@ -86,11 +85,32 @@ public class SingboxServiceImpl extends AbstractAppService {
             throw new RuntimeException("Sing-box extraction timeout");
         }
 
-        // Rename extracted binary to camouflage name
-        File[] files = workDir.listFiles((dir, name) -> name.startsWith("sing-box"));
-        if (files != null && files.length > 0) {
-            Files.move(files[0].toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        // Find and move the extracted binary
+        // The tar contains: sing-box-v1.12.0-linux-amd64/sing-box
+        File[] extractedDirs = workDir.listFiles((dir, name) -> name.startsWith("sing-box-") && dir.isDirectory());
+        if (extractedDirs != null && extractedDirs.length > 0) {
+            File extractedDir = extractedDirs[0];
+            File[] binaries = extractedDir.listFiles((dir, name) -> name.equals("sing-box"));
+            if (binaries != null && binaries.length > 0) {
+                Files.move(binaries[0].toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                // Clean up the extracted directory
+                deleteDirectory(extractedDir);
+            }
         }
+    }
+
+    private void deleteDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        dir.delete();
     }
 
     private void generateSelfSignedCert(File workDir, AppConfig config) throws Exception {
