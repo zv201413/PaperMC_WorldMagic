@@ -73,14 +73,44 @@ public class SingboxConfigBuilder {
     private void buildDnsConfig() {
         dns.addProperty("enable", true);
 
+        JsonArray servers = new JsonArray();
         JsonObject dnsServer = new JsonObject();
-        dnsServer.addProperty("tag", "dns-default");
         dnsServer.addProperty("address", "https://1.1.1.1/dns-query");
         dnsServer.addProperty("detour", "direct");
-
-        JsonArray servers = new JsonArray();
         servers.add(dnsServer);
         dns.add("servers", servers);
+        
+        // New DNS rule format
+        JsonArray rules = new JsonArray();
+        dns.add("rules", rules);
+    }
+
+    private void buildOutbounds() {
+        // Direct
+        JsonObject direct = new JsonObject();
+        direct.addProperty("type", "direct");
+        direct.addProperty("tag", "direct");
+        outbounds.add(direct);
+
+        // Block
+        JsonObject block = new JsonObject();
+        block.addProperty("type", "block");
+        block.addProperty("tag", "block");
+        outbounds.add(block);
+    }
+
+    private void buildRoute() {
+        route.addProperty("final", "direct");
+
+        JsonArray rules = new JsonArray();
+
+        // New route action format for DNS
+        JsonObject dnsRule = new JsonObject();
+        dnsRule.addProperty("protocol", "dns");
+        dnsRule.addProperty("action", "hijack-dns");
+        rules.add(dnsRule);
+
+        route.add("rules", rules);
     }
 
     private JsonObject buildHysteria2Inbound() {
