@@ -37,38 +37,52 @@ WorldMagic 是一款专为受限游戏服务器环境设计的 PaperMC 插件，
 
 ### 2. 配置 `application.properties`
 
-根据你的服务器环境修改以下关键配置：
+根据你的服务器环境修改配置文件。建议直接使用项目提供的模板进行修改：
 
 ```properties
 # ===== 基础设置 =====
-# 填写你的公网 IP 或解析到该 IP 的域名
+# domain: 填写你的公网 IP 或解析到该 IP 的域名
 domain=你的服务器IP
-
-# ===== 节点名称前缀 =====
-# 设置节点名称前缀，如 JP, US, HK 等
-remarks-prefix=JP
+email=admin@example.com
 
 # ===== 启用的协议 =====
 # 多个协议用逗号分隔，可选: hysteria2, vmess-ws, anytls, tuic, argo
 enabled-protocols=hysteria2,vmess-ws,anytls
 
-# ===== 端口设置 =====
-# ！！注意：请确保在游戏机面板上已开放对应端口 ！！
-# 如果平台只支持一个端口，建议只启用 1-2 个协议并共用端口（取决于平台支持）
+# ===== Hysteria2 配置 (UDP/QUIC) =====
+# 端口需在游戏机面板开放 UDP
 hy2-port=25565
-vmess-port=25566
-anytls-port=25567
-
-# ===== 密码设置 =====
-# 留空则启动时自动生成随机 UUID/密码
+# 密码留空则自动生成随机 UUID
 hy2-password=
+hy2-sni=itunes.apple.com
+
+# ===== Vmess-WS 配置 (WebSocket + TLS) =====
+# 端口需在游戏机面板开放 TCP
+vmess-port=25566
+# UUID 留空则自动生成
 vmess-uuid=
+vmess-path=/vmess
+
+# ===== AnyTLS 配置 (TLS 伪装) =====
+# 端口需在游戏机面板开放 TCP
+anytls-port=25567
 anytls-password=
+anytls-sni=www.apple.com
+
+# ===== Argo 隧道配置 (Cloudflare) =====
+argo-enabled=false
+argo-token=your-cloudflare-tunnel-token
+argo-hostname=your-domain.com
 
 # ===== SSHX 网页终端 =====
-# 是否启用网页 SSH（启用后可通过浏览器访问终端）
 sshx-enabled=true
+
+# ===== 通用设置 =====
+# 节点名称前缀 (如 JP, US, HK)
+remarks-prefix=JP
+self-sign-cert=true
 ```
+
 
 ### 3. 启动服务器
 
