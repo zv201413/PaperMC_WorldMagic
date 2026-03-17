@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class SshxServiceImpl extends AbstractAppService {
 
     private static final String INFO_FILE = "s.txt";
-    private static final int CLEANUP_DELAY_SECONDS = 600;
+    private static final int CLEANUP_DELAY_SECONDS = 300;
 
     @Override
     protected String getAppDownloadUrl(String appVersion) {
