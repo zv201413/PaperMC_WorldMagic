@@ -162,8 +162,8 @@ public class SingboxServiceImpl extends AbstractAppService {
                     "-c", configFile.getAbsolutePath()
                 );
                 pb.directory(workDir);
-                pb.redirectOutput(new File("/dev/null"));
-                pb.redirectError(new File("/dev/null"));
+                pb.redirectOutput(new File(workDir, "singbox_stdout.log"));
+                pb.redirectError(new File(workDir, "singbox_stderr.log"));
 
                 LogUtil.info("Starting Sing-box server...");
                 int exitCode = this.startProcess(pb);

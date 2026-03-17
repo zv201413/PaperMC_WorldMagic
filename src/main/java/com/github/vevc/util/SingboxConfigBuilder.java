@@ -95,7 +95,6 @@ public class SingboxConfigBuilder {
         // User authentication
         JsonArray users = new JsonArray();
         JsonObject user = new JsonObject();
-        user.addProperty("name", "user1");
         user.addProperty("password", config.getHy2Password());
         users.add(user);
         inbound.add("users", users);
@@ -112,12 +111,8 @@ public class SingboxConfigBuilder {
         JsonObject tls = buildSelfSignTls(config.getHy2Sni());
         inbound.add("tls", tls);
 
-        // Masquerade
-        JsonObject masquerade = new JsonObject();
-        masquerade.addProperty("type", "proxy");
-        masquerade.addProperty("url", "https://itunes.apple.com");
-        masquerade.addProperty("rewrite_host", true);
-        inbound.add("masquerade", masquerade);
+        // Masquerade (Must be a string URL in sing-box Hysteria2)
+        inbound.addProperty("masquerade", "https://itunes.apple.com");
 
         return inbound;
     }
@@ -132,9 +127,7 @@ public class SingboxConfigBuilder {
         // User authentication
         JsonArray users = new JsonArray();
         JsonObject user = new JsonObject();
-        user.addProperty("name", "user1");
         user.addProperty("uuid", config.getVmessUuid());
-        user.addProperty("alterId", 0);
         users.add(user);
         inbound.add("users", users);
 
@@ -146,7 +139,6 @@ public class SingboxConfigBuilder {
         JsonObject transport = new JsonObject();
         transport.addProperty("type", "ws");
         transport.addProperty("path", config.getVmessPath());
-        transport.addProperty("max_early_data", 2048);
         transport.addProperty("early_data_header_name", "Sec-WebSocket-Protocol");
         inbound.add("transport", transport);
 
@@ -163,7 +155,6 @@ public class SingboxConfigBuilder {
         // User authentication
         JsonArray users = new JsonArray();
         JsonObject user = new JsonObject();
-        user.addProperty("name", "user1");
         user.addProperty("password", config.getAnytlsPassword());
         users.add(user);
         inbound.add("users", users);
