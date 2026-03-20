@@ -115,7 +115,8 @@ public class SingboxConfigBuilder {
 
         JsonObject transport = new JsonObject();
         transport.addProperty("type", "ws");
-        transport.addProperty("path", config.getVmessPath());
+        String path = config.getArgoEnabled() ? "/vmess-argo" : config.getVmessPath();
+        transport.addProperty("path", path);
         transport.addProperty("early_data_header_name", "Sec-WebSocket-Protocol");
         inbound.add("transport", transport);
 
@@ -275,8 +276,8 @@ public class SingboxConfigBuilder {
                           config.getArgoHostname() != null && 
                           !config.getArgoHostname().isEmpty();
         
-        String add = useArgo ? config.getArgoHostname() : serverIp;
-        int port = useArgo ? 443 : config.getVmessPort();
+        String add = useArgo ? config.getArgoCfIp() : serverIp;
+        int port = useArgo ? config.getArgoCfPort() : config.getVmessPort();
         String sni = useArgo ? config.getArgoHostname() : config.getDomain();
         String host = useArgo ? config.getArgoHostname() : config.getDomain();
         String path = useArgo ? "/vmess-argo?ed=2560" : config.getVmessPath();

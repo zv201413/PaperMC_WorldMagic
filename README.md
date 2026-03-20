@@ -81,10 +81,14 @@ anytls-sni=www.apple.com
 # ===== Argo 隧道配置 (Cloudflare) =====
 # argo-enabled: 是否启用 Cloudflare Argo 隧道。启用后无需在面板开放端口。
 argo-enabled=false
-# argo-token: 在 Cloudflare Zero Trust 获取的隧道 Token。
+# argo-token: 在 Cloudflare Zero Trust 获取的隧道 Token（固定隧道使用）。
 argo-token=your-cloudflare-tunnel-token
 # argo-hostname: 隧道绑定的域名。
 argo-hostname=your-domain.com
+# argo-cf-ip: Cloudflare 优选 IP/域名（默认：www.visa.com.sg）。
+argo-cf-ip=www.visa.com.sg
+# argo-cf-port: Cloudflare 优选端口（默认：443）。
+argo-cf-port=443
 
 # ===== SSHX 网页终端 =====
 # sshx-enabled: 是否启用 SSHX 远程终端。

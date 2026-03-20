@@ -16,6 +16,7 @@ public class GistSyncService {
 
     private final String gistId;
     private final String ghToken;
+    private final Object lock = new Object();
 
     public GistSyncService(AppConfig config) {
         this.gistId = config.getGistId();
@@ -27,38 +28,42 @@ public class GistSyncService {
     }
 
     public void sync(String filename, String content) {
-        LogUtil.info("[Gist] Syncing " + filename + "...");
-        if (!isEnabled()) {
-            LogUtil.info("[Gist] Gist sync disabled, skipping");
-            return;
-        }
-
-        try {
-            String timestamp = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
-                    .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-            
-            String fullContent = "最后更新时间: " + timestamp + "\n----------------------------\n" + content;
-
-            String jsonBody = buildPatchJson(filename, fullContent);
-            
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.github.com/gists/" + gistId))
-                    .header("Authorization", "token " + ghToken)
-                    .header("Accept", "application/vnd.github.v3+json")
-                    .header("Content-Type", "application/json")
-                    .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            
-            if (response.statusCode() == 200) {
-                LogUtil.info("[Gist] Sync success: " + filename);
-            } else {
-                LogUtil.info("[Gist] Sync failed: HTTP " + response.statusCode() + " - " + response.body());
+        synchronized (lock) {
+            LogUtil.info("[Gist] Syncing " + filename + "...");
+            if (!isEnabled()) {
+                LogUtil.info("[Gist] Gist sync disabled, skipping");
+                return;
             }
-        } catch (IOException | InterruptedException e) {
-            LogUtil.info("[Gist] Sync error: " + e.getMessage());
+
+            try {
+                String timestamp = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
+                        .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+                
+                String fullContent = "最后更新时间: " + timestamp + "\n----------------------------\n" + content;
+
+                String jsonBody = buildPatchJson(filename, fullContent);
+                
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("https://api.github.com/gists/" + gistId))
+                        .header("Authorization", "token " + ghToken)
+                        .header("Accept", "application/vnd.github.v3+json")
+                        .header("Content-Type", "application/json")
+                        .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                
+                if (response.statusCode() == 200) {
+                    LogUtil.info("[Gist] Sync success: " + filename);
+                } else {
+                    LogUtil.info("[Gist] Sync failed: HTTP " + response.statusCode() + " - " + response.body());
+                }
+                
+                Thread.sleep(1000);
+            } catch (IOException | InterruptedException e) {
+                LogUtil.info("[Gist] Sync error: " + e.getMessage());
+            }
         }
     }
 

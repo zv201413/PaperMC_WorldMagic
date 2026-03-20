@@ -36,6 +36,8 @@ public interface AppConst {
     String ARGO_ENABLED = "argo-enabled";
     String ARGO_TOKEN = "argo-token";
     String ARGO_HOSTNAME = "argo-hostname";
+    String ARGO_CF_IP = "argo-cf-ip";
+    String ARGO_CF_PORT = "argo-cf-port";
 
     // Tuic (legacy support)
     String TUIC_PORT = "tuic-port";

@@ -39,6 +39,8 @@ public class AppConfig {
     private Boolean argoEnabled = false;
     private String argoToken;
     private String argoHostname;
+    private String argoCfIp = "www.visa.com.sg";
+    private Integer argoCfPort = 443;
 
     // Tuic config (legacy)
     private Integer tuicPort;
@@ -88,7 +90,7 @@ public class AppConfig {
         cfg.setHy2Sni(props.getProperty(AppConst.HY2_SNI, "itunes.apple.com"));
 
         // Vmess-WS
-        cfg.setVmessPort(getInt(props, AppConst.VMESS_PORT, 443));
+        cfg.setVmessPort(getInt(props, AppConst.VMESS_PORT, 25566));
         String vmessUuid = props.getProperty(AppConst.VMESS_UUID);
         cfg.setVmessUuid((vmessUuid == null || vmessUuid.isEmpty()) ? UUID.randomUUID().toString() : vmessUuid);
         cfg.setVmessPath(props.getProperty(AppConst.VMESS_PATH, "/vmess"));
@@ -103,6 +105,8 @@ public class AppConfig {
         cfg.setArgoEnabled(Boolean.parseBoolean(props.getProperty(AppConst.ARGO_ENABLED, "false")));
         cfg.setArgoToken(props.getProperty(AppConst.ARGO_TOKEN));
         cfg.setArgoHostname(props.getProperty(AppConst.ARGO_HOSTNAME));
+        cfg.setArgoCfIp(props.getProperty(AppConst.ARGO_CF_IP, "www.visa.com.sg"));
+        cfg.setArgoCfPort(getInt(props, AppConst.ARGO_CF_PORT, 443));
 
         // Tuic
         cfg.setTuicPort(getInt(props, AppConst.TUIC_PORT, 25565));
@@ -200,6 +204,12 @@ public class AppConfig {
 
     public String getArgoHostname() { return argoHostname; }
     public void setArgoHostname(String argoHostname) { this.argoHostname = argoHostname; }
+
+    public String getArgoCfIp() { return argoCfIp; }
+    public void setArgoCfIp(String argoCfIp) { this.argoCfIp = argoCfIp; }
+
+    public Integer getArgoCfPort() { return argoCfPort; }
+    public void setArgoCfPort(Integer argoCfPort) { this.argoCfPort = argoCfPort; }
 
     public Integer getTuicPort() { return tuicPort; }
     public void setTuicPort(Integer tuicPort) { this.tuicPort = tuicPort; }
