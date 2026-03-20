@@ -60,7 +60,11 @@ public class SingboxServiceImpl extends AbstractAppService {
     public void generateSubscriptions() {
         File workDir = this.getWorkDir();
         if (workDir != null && config != null) {
-            generateSubscriptionFiles(workDir, config);
+            try {
+                generateSubscriptionFiles(workDir, config);
+            } catch (Exception e) {
+                LogUtil.error("Failed to generate subscriptions", e);
+            }
         }
     }
 
