@@ -149,6 +149,11 @@ self-sign-cert=true
 
 **使用方法**：下载对应文件，将其中的 Base64 字符串导入 V2rayN, Shadowrocket 或 Clash 等客户端。
 
+**关于 Argo 隧道节点**：
+- 启用 Argo 隧道后，Vmess-WS 节点会自动使用隧道域名
+- 临时隧道（无 Token）：Vmess-WS 使用 `*.trycloudflare.com` 域名，端口 443
+- 固定隧道（有 Token）：Vmess-WS 使用你分配的域名
+
 ### 2. 登录 SSHX 网页终端
 
 在 `.cache/` 目录中找到 **`s.txt`** 文件。

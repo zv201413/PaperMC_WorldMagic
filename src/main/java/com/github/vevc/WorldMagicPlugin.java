@@ -11,6 +11,7 @@ import com.github.vevc.util.LogUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -85,6 +86,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
                                     if (tunnelDomain != null) {
                                         appConfig.setArgoHostname(tunnelDomain);
                                         singboxService.generateSubscriptions();
+                                        syncSubscriptionsToGist();
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error("Failed to capture quick tunnel domain", e);
@@ -154,6 +156,28 @@ public final class WorldMagicPlugin extends JavaPlugin {
         } catch (Exception e) {
             LogUtil.error("Services installation failed", e);
             return false;
+        }
+    }
+
+    private void syncSubscriptionsToGist() {
+        if (gistSyncService == null || !gistSyncService.isEnabled()) {
+            return;
+        }
+        File cacheDir = singboxService.getWorkDir();
+        if (cacheDir == null) return;
+        
+        String prefix = appConfig.getRemarksPrefix();
+        String[] files = {prefix + "-zv-hysteria2", prefix + "-zv-vmess-ws", prefix + "-zv-argo", prefix + "-zv-all"};
+        for (String file : files) {
+            File f = new File(cacheDir, file);
+            if (f.exists()) {
+                try {
+                    String content = java.nio.file.Files.readString(f.toPath());
+                    gistSyncService.sync(file, content);
+                } catch (Exception e) {
+                    LogUtil.info("[Gist] Failed to read " + file + ": " + e.getMessage());
+                }
+            }
         }
     }
 

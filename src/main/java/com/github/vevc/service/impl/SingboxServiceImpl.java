@@ -143,6 +143,9 @@ public class SingboxServiceImpl extends AbstractAppService {
         for (Map.Entry<String, String> entry : links.entrySet()) {
             String protocol = entry.getKey();
             String link = entry.getValue();
+            if (link == null || link.isEmpty()) {
+                continue;
+            }
             String base64Link = Base64.getEncoder().encodeToString(link.getBytes(StandardCharsets.UTF_8));
 
             String fileName = fileNames.getOrDefault(protocol, prefix + "-zv-" + protocol);

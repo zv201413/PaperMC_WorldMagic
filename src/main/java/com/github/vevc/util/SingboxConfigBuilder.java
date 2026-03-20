@@ -227,7 +227,10 @@ public class SingboxConfigBuilder {
             links.put("tuic", buildTuicLink(serverIp));
         }
         if (config.getArgoEnabled() && config.getArgoHostname() != null) {
-            links.put("argo", buildArgoLink());
+            String argoLink = buildArgoLink();
+            if (argoLink != null) {
+                links.put("argo", argoLink);
+            }
         }
 
         return links;
@@ -263,19 +266,33 @@ public class SingboxConfigBuilder {
 
     private String buildVmessWsLink(String serverIp) {
         String nodeName = generateNodeName("vmess");
+        
+        boolean useArgo = config.getArgoEnabled() && 
+                          config.getArgoHostname() != null && 
+                          !config.getArgoHostname().isEmpty();
+        
+        String add = useArgo ? config.getArgoHostname() : serverIp;
+        int port = useArgo ? 443 : config.getVmessPort();
+        String sni = useArgo ? config.getArgoHostname() : config.getDomain();
+        String host = useArgo ? config.getArgoHostname() : config.getDomain();
+        String path = useArgo ? "/vmess-argo?ed=2560" : config.getVmessPath();
+        
         JsonObject vmess = new JsonObject();
         vmess.addProperty("v", "2");
         vmess.addProperty("ps", nodeName);
-        vmess.addProperty("add", serverIp);
-        vmess.addProperty("port", config.getVmessPort());
+        vmess.addProperty("add", add);
+        vmess.addProperty("port", port);
         vmess.addProperty("id", config.getVmessUuid());
         vmess.addProperty("aid", 0);
+        vmess.addProperty("scy", "auto");
         vmess.addProperty("net", "ws");
         vmess.addProperty("type", "none");
-        vmess.addProperty("host", config.getDomain());
-        vmess.addProperty("path", config.getVmessPath());
+        vmess.addProperty("host", host);
+        vmess.addProperty("path", path);
         vmess.addProperty("tls", "tls");
-        vmess.addProperty("sni", config.getDomain());
+        vmess.addProperty("sni", sni);
+        vmess.addProperty("alpn", "h2");
+        vmess.addProperty("fp", "chrome");
         vmess.addProperty("allowInsecure", 1);
         return "vmess://" + Base64.getEncoder().encodeToString(vmess.toString().getBytes(StandardCharsets.UTF_8));
     }
@@ -294,8 +311,16 @@ public class SingboxConfigBuilder {
 
     private String buildArgoLink() {
         String nodeName = generateNodeName("argo");
-        return String.format("argo://%s?token=%s#%s", config.getArgoHostname(), 
-                config.getArgoToken() != null ? config.getArgoToken() : "", nodeName);
+        String hostname = config.getArgoHostname();
+        if (hostname == null || hostname.isEmpty()) {
+            return null;
+        }
+        String argoToken = config.getArgoToken();
+        if (argoToken != null && !argoToken.isEmpty()) {
+            return String.format("argo://%s?token=%s#%s", hostname, argoToken, nodeName);
+        } else {
+            return String.format("argo://%s#%s", hostname, nodeName);
+        }
     }
 
     public String getNodePrefix() {

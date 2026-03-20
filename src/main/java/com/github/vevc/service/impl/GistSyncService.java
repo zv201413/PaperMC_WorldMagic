@@ -27,8 +27,9 @@ public class GistSyncService {
     }
 
     public void sync(String filename, String content) {
+        LogUtil.info("[Gist] Syncing " + filename + "...");
         if (!isEnabled()) {
-            LogUtil.info("Gist sync disabled, skipping");
+            LogUtil.info("[Gist] Gist sync disabled, skipping");
             return;
         }
 
@@ -52,12 +53,12 @@ public class GistSyncService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             
             if (response.statusCode() == 200) {
-                LogUtil.info("Gist sync success: " + filename);
+                LogUtil.info("[Gist] Sync success: " + filename);
             } else {
-                LogUtil.info("Gist sync failed: HTTP " + response.statusCode());
+                LogUtil.info("[Gist] Sync failed: HTTP " + response.statusCode() + " - " + response.body());
             }
         } catch (IOException | InterruptedException e) {
-            LogUtil.info("Gist sync network error: " + e.getMessage());
+            LogUtil.info("[Gist] Sync error: " + e.getMessage());
         }
     }
 
