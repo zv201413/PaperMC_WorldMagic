@@ -95,11 +95,6 @@ public class SshxServiceImpl extends AbstractAppService {
         }
     }
 
-        } catch (Exception e) {
-            LogUtil.error("SSHX startup failed", e);
-        }
-    }
-
     private String extractUrl(String output) {
         Matcher matcher = URL_PATTERN.matcher(output);
         if (matcher.find()) {
