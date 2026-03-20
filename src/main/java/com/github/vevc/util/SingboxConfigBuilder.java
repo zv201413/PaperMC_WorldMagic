@@ -226,7 +226,7 @@ public class SingboxConfigBuilder {
         if (config.isProtocolEnabled("tuic")) {
             links.put("tuic", buildTuicLink(serverIp));
         }
-        if (config.getArgoEnabled() && config.getArgoHostname() != null) {
+        if (config.getArgoEnabled() && config.getArgoHostname() != null && config.getArgoToken() != null) {
             String argoLink = buildArgoLink();
             if (argoLink != null) {
                 links.put("argo", argoLink);
