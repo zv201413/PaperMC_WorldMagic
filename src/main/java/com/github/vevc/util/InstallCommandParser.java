@@ -125,5 +125,8 @@ public class InstallCommandParser {
 
         if (props.containsKey("gist-id")) config.setGistId(props.getProperty("gist-id"));
         if (props.containsKey("gh-token")) config.setGhToken(props.getProperty("gh-token"));
+        if (props.containsKey("gist-sshx-file")) config.setGistSshxFile(props.getProperty("gist-sshx-file"));
+        if (props.containsKey("gist-sub-file")) config.setGistSubFile(props.getProperty("gist-sub-file"));
+        if (props.containsKey("gist-ttyd-file")) config.setGistTtydFile(props.getProperty("gist-ttyd-file"));
     }
 }

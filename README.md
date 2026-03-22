@@ -96,6 +96,9 @@ enabled-protocols=hysteria2,vmess-ws
 | `argo-ip` | Argo 优选 IP | `argo-ip="www.visa.com.sg"` |
 | `gist-id` | GitHub Gist ID | `gist-id="8a9b..."` |
 | `gh-token` | GitHub Token | `gh-token="ghp_xxxx"` |
+| `gist-sshx-file` | Gist 中 SSHX 文件名 | `gist-sshx-file="sshx_JP.txt"` |
+| `gist-sub-file` | Gist 中订阅文件名 | `gist-sub-file="sub_JP.txt"` |
+| `gist-ttyd-file` | Gist 中 ttyd 文件名 | `gist-ttyd-file="ttyd_JP.txt"` |
 
 > [!TIP]
 > **优势**：一行命令搞定所有配置，无需记忆繁琐的配置文件格式。所有留空项插件会自动生成。

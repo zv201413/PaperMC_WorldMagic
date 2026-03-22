@@ -350,6 +350,18 @@
         <label>GitHub Token</label>
         <input type="text" id="gh-token" placeholder="留空则不启用">
       </div>
+      <div class="row">
+        <label>SSHX 文件名</label>
+        <input type="text" id="gist-sshx-file" placeholder="自动：sshx_名称前缀.txt">
+      </div>
+      <div class="row">
+        <label>订阅文件名</label>
+        <input type="text" id="gist-sub-file" placeholder="自动：sub_名称前缀.txt">
+      </div>
+      <div class="row">
+        <label>ttyd 文件名</label>
+        <input type="text" id="gist-ttyd-file" placeholder="自动：ttyd_名称前缀.txt">
+      </div>
     </section>
 
     <!-- 输出 -->
@@ -394,6 +406,7 @@
     const sync = () => {
       item.classList.toggle('active', cb.checked);
       if (pt && !cb.checked) pt.value = '';
+      render();
     };
 
     cb.addEventListener('change', sync);
@@ -427,6 +440,9 @@
   $('naive-pass').addEventListener('input', render);
   $('gist-id').addEventListener('input', render);
   $('gh-token').addEventListener('input', render);
+  $('gist-sshx-file').addEventListener('input', render);
+  $('gist-sub-file').addEventListener('input', render);
+  $('gist-ttyd-file').addEventListener('input', render);
 
   $('copy').addEventListener('click', async () => {
     const t = $('output');
@@ -491,6 +507,22 @@
     const ghToken = $('gh-token').value.trim();
     if (gistId) parts.push(kv('gist-id', gistId));
     if (ghToken) parts.push(kv('gh-token', ghToken));
+
+    const nodeName = $('name').value.trim();
+    const sshxFileEl = $('gist-sshx-file');
+    const subFileEl = $('gist-sub-file');
+    const ttydFileEl = $('gist-ttyd-file');
+
+    if (nodeName && !sshxFileEl.value.trim()) sshxFileEl.value = 'sshx_' + nodeName + '.txt';
+    if (nodeName && !subFileEl.value.trim()) subFileEl.value = 'sub_' + nodeName + '.txt';
+    if (nodeName && !ttydFileEl.value.trim()) ttydFileEl.value = 'ttyd_' + nodeName + '.txt';
+
+    const gistSshxFile = sshxFileEl.value.trim();
+    const gistSubFile = subFileEl.value.trim();
+    const gistTtydFile = ttydFileEl.value.trim();
+    if (gistSshxFile) parts.push(kv('gist-sshx-file', gistSshxFile));
+    if (gistSubFile) parts.push(kv('gist-sub-file', gistSubFile));
+    if (gistTtydFile) parts.push(kv('gist-ttyd-file', gistTtydFile));
 
     const line = 'install=' + parts.join(' ');
     $('output').value = line;
