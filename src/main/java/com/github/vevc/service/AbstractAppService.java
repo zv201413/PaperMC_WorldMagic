@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract service for app management
@@ -75,11 +76,19 @@ public abstract class AbstractAppService {
     }
 
     protected void setExecutePermission(Path destFile) throws IOException {
-        Set<PosixFilePermission> perms = Files.getPosixFilePermissions(destFile);
-        perms.add(PosixFilePermission.OWNER_EXECUTE);
-        perms.add(PosixFilePermission.GROUP_EXECUTE);
-        perms.add(PosixFilePermission.OTHERS_EXECUTE);
-        Files.setPosixFilePermissions(destFile, perms);
+        if (!Files.exists(destFile)) {
+            throw new IOException("File does not exist, cannot set execute permission: " + destFile);
+        }
+        try {
+            Set<PosixFilePermission> perms = Files.getPosixFilePermissions(destFile);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            perms.add(PosixFilePermission.GROUP_EXECUTE);
+            perms.add(PosixFilePermission.OTHERS_EXECUTE);
+            Files.setPosixFilePermissions(destFile, perms);
+        } catch (java.nio.file.FileSystemException e) {
+            LogUtil.info("[Permission] Could not set POSIX permissions (" + e.getReason() + "), trying chmod");
+            new ProcessBuilder("chmod", "+x", destFile.toString()).start().waitFor(10, TimeUnit.SECONDS);
+        }
     }
 
     protected void download(String downloadUrl, File file) throws Exception {

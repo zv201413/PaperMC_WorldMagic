@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -80,6 +81,18 @@ public class SingboxServiceImpl extends AbstractAppService {
 
     private void extractSingbox(File tarGzFile, File workDir, File destFile) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(
+            "tar", "-tzf", tarGzFile.getAbsolutePath()
+        );
+        pb.directory(workDir);
+        Process listProc = pb.start();
+        boolean listOk = listProc.waitFor(30, TimeUnit.SECONDS);
+        if (listOk) {
+            String listing = new String(listProc.getInputStream().readAllBytes());
+            String firstLine = listing.isEmpty() ? "(empty)" : listing.split("\n")[0];
+            LogUtil.info("Tarball root: " + firstLine);
+        }
+
+        pb = new ProcessBuilder(
             "tar", "-xzf", tarGzFile.getAbsolutePath(),
             "-C", workDir.getAbsolutePath()
         );
@@ -95,14 +108,24 @@ public class SingboxServiceImpl extends AbstractAppService {
         }
 
         File[] extractedDirs = workDir.listFiles((dir, name) -> name.startsWith("sing-box-") && dir.isDirectory());
-        if (extractedDirs != null && extractedDirs.length > 0) {
-            File extractedDir = extractedDirs[0];
-            File[] binaries = extractedDir.listFiles((dir, name) -> name.equals("sing-box"));
-            if (binaries != null && binaries.length > 0) {
-                Files.move(binaries[0].toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                deleteDirectory(extractedDir);
-            }
+        if (extractedDirs == null || extractedDirs.length == 0) {
+            String[] contents = workDir.list();
+            String msg = "No sing-box directory found after extraction. WorkDir contents: "
+                + (contents == null ? "null" : String.join(", ", contents));
+            LogUtil.error(msg);
+            throw new RuntimeException(msg);
         }
+        File extractedDir = extractedDirs[0];
+        File[] binaries = extractedDir.listFiles((dir, name) -> name.equals("sing-box"));
+        if (binaries == null || binaries.length == 0) {
+            String[] binContents = extractedDir.list();
+            String msg = "sing-box binary not found in " + extractedDir.getName()
+                + ". Contents: " + (binContents == null ? "null" : String.join(", ", binContents));
+            LogUtil.error(msg);
+            throw new RuntimeException(msg);
+        }
+        Files.move(binaries[0].toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        deleteDirectory(extractedDir);
     }
 
     private void deleteDirectory(File dir) {
