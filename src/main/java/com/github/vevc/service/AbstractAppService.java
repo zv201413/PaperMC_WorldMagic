@@ -87,7 +87,11 @@ public abstract class AbstractAppService {
             Files.setPosixFilePermissions(destFile, perms);
         } catch (java.nio.file.FileSystemException e) {
             LogUtil.info("[Permission] Could not set POSIX permissions (" + e.getReason() + "), trying chmod");
-            new ProcessBuilder("chmod", "+x", destFile.toString()).start().waitFor(10, TimeUnit.SECONDS);
+            try {
+                new ProcessBuilder("chmod", "+x", destFile.toString()).start().waitFor(10, TimeUnit.SECONDS);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
