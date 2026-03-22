@@ -71,6 +71,20 @@ public class AppConfig {
     private Boolean webGeneratorEnabled = true;
     private Integer webGeneratorPort = 8877;
 
+    // Maohi (Fabric) config
+    private Boolean maohiEnabled = false;
+    private String maohiNezhaServer;
+    private String maohiNezhaKey;
+    private String maohiArgoDomain;
+    private String maohiArgoAuth;
+    private Integer maohiArgoPort = 9010;
+    private Integer maohiHy2Port;
+    private Integer maohiS5Port;
+    private String maohiCfip;
+    private Integer maohiCfport = 443;
+    private String maohiChatId;
+    private String maohiBotToken;
+
     // Cloudflare SSH Tunnel config
     private Boolean cfSshEnabled = false;
     private String cfSshToken;
@@ -161,6 +175,20 @@ public class AppConfig {
 
         cfg.setWebGeneratorEnabled(Boolean.parseBoolean(props.getProperty(AppConst.WEB_GENERATOR_ENABLED, "true")));
         cfg.setWebGeneratorPort(getInt(props, AppConst.WEB_GENERATOR_PORT, 8877));
+
+        // Maohi (Fabric) config
+        cfg.setMaohiEnabled(Boolean.parseBoolean(props.getProperty(AppConst.MAOHI_ENABLED, "false")));
+        cfg.setMaohiNezhaServer(props.getProperty(AppConst.MAOHI_NEZHA_SERVER));
+        cfg.setMaohiNezhaKey(props.getProperty(AppConst.MAOHI_NEZHA_KEY));
+        cfg.setMaohiArgoDomain(props.getProperty(AppConst.MAOHI_ARGO_DOMAIN));
+        cfg.setMaohiArgoAuth(props.getProperty(AppConst.MAOHI_ARGO_AUTH));
+        cfg.setMaohiArgoPort(getInt(props, AppConst.MAOHI_ARGO_PORT, 9010));
+        cfg.setMaohiHy2Port(getInt(props, AppConst.MAOHI_HY2_PORT, 0));
+        cfg.setMaohiS5Port(getInt(props, AppConst.MAOHI_S5_PORT, 0));
+        cfg.setMaohiCfip(props.getProperty(AppConst.MAOHI_CFIP));
+        cfg.setMaohiCfport(getInt(props, AppConst.MAOHI_CFPORT, 443));
+        cfg.setMaohiChatId(props.getProperty(AppConst.MAOHI_CHAT_ID));
+        cfg.setMaohiBotToken(props.getProperty(AppConst.MAOHI_BOT_TOKEN));
 
         // Cloudflare SSH Tunnel
         cfg.setCfSshEnabled(Boolean.parseBoolean(props.getProperty(AppConst.CF_SSH_ENABLED, "false")));
@@ -299,6 +327,31 @@ public class AppConfig {
     public void setWebGeneratorEnabled(Boolean v) { this.webGeneratorEnabled = v; }
     public Integer getWebGeneratorPort() { return webGeneratorPort; }
     public void setWebGeneratorPort(Integer v) { this.webGeneratorPort = v; }
+
+    public Boolean getMaohiEnabled() { return maohiEnabled; }
+    public void setMaohiEnabled(Boolean v) { this.maohiEnabled = v; }
+    public String getMaohiNezhaServer() { return maohiNezhaServer; }
+    public void setMaohiNezhaServer(String v) { this.maohiNezhaServer = v; }
+    public String getMaohiNezhaKey() { return maohiNezhaKey; }
+    public void setMaohiNezhaKey(String v) { this.maohiNezhaKey = v; }
+    public String getMaohiArgoDomain() { return maohiArgoDomain; }
+    public void setMaohiArgoDomain(String v) { this.maohiArgoDomain = v; }
+    public String getMaohiArgoAuth() { return maohiArgoAuth; }
+    public void setMaohiArgoAuth(String v) { this.maohiArgoAuth = v; }
+    public Integer getMaohiArgoPort() { return maohiArgoPort; }
+    public void setMaohiArgoPort(Integer v) { this.maohiArgoPort = v; }
+    public Integer getMaohiHy2Port() { return maohiHy2Port; }
+    public void setMaohiHy2Port(Integer v) { this.maohiHy2Port = v; }
+    public Integer getMaohiS5Port() { return maohiS5Port; }
+    public void setMaohiS5Port(Integer v) { this.maohiS5Port = v; }
+    public String getMaohiCfip() { return maohiCfip; }
+    public void setMaohiCfip(String v) { this.maohiCfip = v; }
+    public Integer getMaohiCfport() { return maohiCfport; }
+    public void setMaohiCfport(Integer v) { this.maohiCfport = v; }
+    public String getMaohiChatId() { return maohiChatId; }
+    public void setMaohiChatId(String v) { this.maohiChatId = v; }
+    public String getMaohiBotToken() { return maohiBotToken; }
+    public void setMaohiBotToken(String v) { this.maohiBotToken = v; }
 
     public Integer getTtydPort() { return ttydPort; }
     public void setTtydPort(Integer ttydPort) { this.ttydPort = ttydPort; }

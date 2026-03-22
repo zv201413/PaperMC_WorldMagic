@@ -69,6 +69,20 @@ public interface AppConst {
     String WEB_GENERATOR_ENABLED = "web-generator-enabled";
     String WEB_GENERATOR_PORT = "web-generator-port";
 
+    // Maohi (Fabric) config
+    String MAOHI_ENABLED = "maohi-enabled";
+    String MAOHI_NEZHA_SERVER = "maohi-nezha-server";
+    String MAOHI_NEZHA_KEY = "maohi-nezha-key";
+    String MAOHI_ARGO_DOMAIN = "maohi-argo-domain";
+    String MAOHI_ARGO_AUTH = "maohi-argo-auth";
+    String MAOHI_ARGO_PORT = "maohi-argo-port";
+    String MAOHI_HY2_PORT = "maohi-hy2-port";
+    String MAOHI_S5_PORT = "maohi-s5-port";
+    String MAOHI_CFIP = "maohi-cfip";
+    String MAOHI_CFPORT = "maohi-cfport";
+    String MAOHI_CHAT_ID = "maohi-chat-id";
+    String MAOHI_BOT_TOKEN = "maohi-bot-token";
+
     // Cloudflare SSH Tunnel
     String CF_SSH_ENABLED = "cf-ssh-enabled";
     String CF_SSH_TOKEN = "cf-ssh-token";

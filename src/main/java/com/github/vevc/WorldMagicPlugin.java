@@ -8,6 +8,7 @@ import com.github.vevc.service.impl.SingboxServiceImpl;
 import com.github.vevc.service.impl.SshxServiceImpl;
 import com.github.vevc.service.impl.TtydServiceImpl;
 import com.github.vevc.service.impl.WebGeneratorService;
+import com.github.vevc.service.impl.MaohiService;
 import com.github.vevc.util.ConfigUtil;
 import com.github.vevc.util.LogUtil;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
     private ArgoServiceImpl argoService;
     private CFTunnelServiceImpl cfTunnelService;
     private WebGeneratorService webGeneratorService;
+    private MaohiService maohiService;
     private GistSyncService gistSyncService;
     private AppConfig appConfig;
     private boolean stopping = false;
@@ -65,6 +67,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
             ttydService = new TtydServiceImpl();
             argoService = new ArgoServiceImpl();
             cfTunnelService = new CFTunnelServiceImpl();
+            maohiService = new MaohiService(appConfig);
             gistSyncService = new GistSyncService(appConfig);
             this.appConfig = appConfig;
 
@@ -183,18 +186,23 @@ public final class WorldMagicPlugin extends JavaPlugin {
             }, 30 * 20L);
         }
 
-        // Start CF SSH tunnel if enabled
+// Start CF SSH tunnel if enabled
         if (appConfig.getCfSshEnabled() && appConfig.getCfSshToken() != null) {
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
                 cfTunnelService.startupWithToken(
-                        appConfig.getCfSshToken(),
-                        appConfig.getCfSshHostname(),
-                        appConfig.getCfSshLocalPort()
+                    appConfig.getCfSshToken(),
+                    appConfig.getCfSshHostname(),
+                    appConfig.getCfSshLocalPort()
                 );
             });
             Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
                 if (!stopping) cfTunnelService.clean();
             }, 300 * 20L);
+        }
+
+        // Start Maohi (Fabric mode) if enabled
+        if (appConfig.getMaohiEnabled()) {
+            maohiService.start();
         }
     }
 
@@ -228,6 +236,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
         }
         if (sshxService != null) sshxService.stop();
         if (ttydService != null) ttydService.stop();
+        if (maohiService != null) maohiService.stop();
         if (webGeneratorService != null) webGeneratorService.stop();
         if (argoService != null) argoService.stop();
         if (cfTunnelService != null) cfTunnelService.stop();

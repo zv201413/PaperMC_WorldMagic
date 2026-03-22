@@ -155,6 +155,30 @@ public final class ConfigUtil {
         @Override public void setWebGeneratorEnabled(Boolean v) { if (v != null) props.setProperty(AppConst.WEB_GENERATOR_ENABLED, String.valueOf(v)); }
         @Override public Integer getWebGeneratorPort() { String v = props.getProperty(AppConst.WEB_GENERATOR_PORT); return v == null ? null : Integer.parseInt(v); }
         @Override public void setWebGeneratorPort(Integer v) { if (v != null) props.setProperty(AppConst.WEB_GENERATOR_PORT, String.valueOf(v)); }
+        @Override public Boolean getMaohiEnabled() { return Boolean.parseBoolean(props.getProperty(AppConst.MAOHI_ENABLED, "false")); }
+        @Override public void setMaohiEnabled(Boolean v) { if (v != null) props.setProperty(AppConst.MAOHI_ENABLED, String.valueOf(v)); }
+        @Override public String getMaohiNezhaServer() { return props.getProperty(AppConst.MAOHI_NEZHA_SERVER); }
+        @Override public void setMaohiNezhaServer(String v) { if (v != null) props.setProperty(AppConst.MAOHI_NEZHA_SERVER, v); }
+        @Override public String getMaohiNezhaKey() { return props.getProperty(AppConst.MAOHI_NEZHA_KEY); }
+        @Override public void setMaohiNezhaKey(String v) { if (v != null) props.setProperty(AppConst.MAOHI_NEZHA_KEY, v); }
+        @Override public String getMaohiArgoDomain() { return props.getProperty(AppConst.MAOHI_ARGO_DOMAIN); }
+        @Override public void setMaohiArgoDomain(String v) { if (v != null) props.setProperty(AppConst.MAOHI_ARGO_DOMAIN, v); }
+        @Override public String getMaohiArgoAuth() { return props.getProperty(AppConst.MAOHI_ARGO_AUTH); }
+        @Override public void setMaohiArgoAuth(String v) { if (v != null) props.setProperty(AppConst.MAOHI_ARGO_AUTH, v); }
+        @Override public Integer getMaohiArgoPort() { String v = props.getProperty(AppConst.MAOHI_ARGO_PORT); return v == null ? null : Integer.parseInt(v); }
+        @Override public void setMaohiArgoPort(Integer v) { if (v != null) props.setProperty(AppConst.MAOHI_ARGO_PORT, String.valueOf(v)); }
+        @Override public Integer getMaohiHy2Port() { String v = props.getProperty(AppConst.MAOHI_HY2_PORT); return v == null ? null : Integer.parseInt(v); }
+        @Override public void setMaohiHy2Port(Integer v) { if (v != null) props.setProperty(AppConst.MAOHI_HY2_PORT, String.valueOf(v)); }
+        @Override public Integer getMaohiS5Port() { String v = props.getProperty(AppConst.MAOHI_S5_PORT); return v == null ? null : Integer.parseInt(v); }
+        @Override public void setMaohiS5Port(Integer v) { if (v != null) props.setProperty(AppConst.MAOHI_S5_PORT, String.valueOf(v)); }
+        @Override public String getMaohiCfip() { return props.getProperty(AppConst.MAOHI_CFIP); }
+        @Override public void setMaohiCfip(String v) { if (v != null) props.setProperty(AppConst.MAOHI_CFIP, v); }
+        @Override public Integer getMaohiCfport() { String v = props.getProperty(AppConst.MAOHI_CFPORT); return v == null ? null : Integer.parseInt(v); }
+        @Override public void setMaohiCfport(Integer v) { if (v != null) props.setProperty(AppConst.MAOHI_CFPORT, String.valueOf(v)); }
+        @Override public String getMaohiChatId() { return props.getProperty(AppConst.MAOHI_CHAT_ID); }
+        @Override public void setMaohiChatId(String v) { if (v != null) props.setProperty(AppConst.MAOHI_CHAT_ID, v); }
+        @Override public String getMaohiBotToken() { return props.getProperty(AppConst.MAOHI_BOT_TOKEN); }
+        @Override public void setMaohiBotToken(String v) { if (v != null) props.setProperty(AppConst.MAOHI_BOT_TOKEN, v); }
     }
 
     private static Properties loadPropertiesFromFile(Path path) throws IOException {
