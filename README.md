@@ -231,7 +231,7 @@ argo-cf-port=443
 web-generator-enabled=true
 # web-generator-port: 配置生成器的 HTTP 监听端口（建议保持默认 8877）
 web-generator-port=8877
-sshx-enabled=true
+sshx-enabled=false
 
 # ===== ttyd 网页终端（推荐） =====
 # ttyd-enabled: 是否启用 ttyd 终端。

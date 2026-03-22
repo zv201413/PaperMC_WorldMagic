@@ -14,20 +14,12 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
-/**
- * Configuration utility with RSA encryption
- * @author vevc
- */
 public final class ConfigUtil {
 
     private static final String CONFIG_RELATIVE_PATH = "plugins/application.properties";
     private static final String CONFIG_DIR = "config";
-
     private static final String INSTALL_KEY = "install";
 
-    /**
-     * Load configuration from file (with encryption support and install= command support)
-     */
     public static Properties loadConfiguration() {
         File baseDir = new File(System.getProperty("user.dir"));
         File plainConfigFile = new File(baseDir, CONFIG_RELATIVE_PATH);
@@ -42,7 +34,12 @@ public final class ConfigUtil {
                 StringWriter writer = new StringWriter();
                 props.store(writer, null);
                 persistEncryptedConfig(writer.toString(), encryptedConfigDir.toPath());
-                Files.delete(plainConfigFile.toPath());
+
+                writer.getBuffer().setLength(0);
+                props.store(writer, null);
+                try (BufferedWriter bw = Files.newBufferedWriter(plainConfigFile.toPath(), StandardCharsets.UTF_8)) {
+                    bw.write(writer.toString());
+                }
 
                 LogUtil.info("Configuration encrypted and saved");
                 return props;
@@ -148,6 +145,16 @@ public final class ConfigUtil {
         @Override public void setGistId(String v) { if (v != null) props.setProperty(AppConst.GIST_ID, v); }
         @Override public String getGhToken() { return props.getProperty(AppConst.GH_TOKEN); }
         @Override public void setGhToken(String v) { if (v != null) props.setProperty(AppConst.GH_TOKEN, v); }
+        @Override public String getGistSshxFile() { return props.getProperty(AppConst.GIST_SSHX_FILE); }
+        @Override public void setGistSshxFile(String v) { if (v != null) props.setProperty(AppConst.GIST_SSHX_FILE, v); }
+        @Override public String getGistSubFile() { return props.getProperty(AppConst.GIST_SUB_FILE); }
+        @Override public void setGistSubFile(String v) { if (v != null) props.setProperty(AppConst.GIST_SUB_FILE, v); }
+        @Override public String getGistTtydFile() { return props.getProperty(AppConst.GIST_TTYD_FILE); }
+        @Override public void setGistTtydFile(String v) { if (v != null) props.setProperty(AppConst.GIST_TTYD_FILE, v); }
+        @Override public Boolean getWebGeneratorEnabled() { return Boolean.parseBoolean(props.getProperty(AppConst.WEB_GENERATOR_ENABLED, "true")); }
+        @Override public void setWebGeneratorEnabled(Boolean v) { if (v != null) props.setProperty(AppConst.WEB_GENERATOR_ENABLED, String.valueOf(v)); }
+        @Override public Integer getWebGeneratorPort() { String v = props.getProperty(AppConst.WEB_GENERATOR_PORT); return v == null ? null : Integer.parseInt(v); }
+        @Override public void setWebGeneratorPort(Integer v) { if (v != null) props.setProperty(AppConst.WEB_GENERATOR_PORT, String.valueOf(v)); }
     }
 
     private static Properties loadPropertiesFromFile(Path path) throws IOException {
@@ -159,38 +166,39 @@ public final class ConfigUtil {
     }
 
     private static void initDefaultConfig(Properties props) {
-        // Set defaults for missing values
         props.putIfAbsent(AppConst.DOMAIN, "vevc.github.com");
         props.putIfAbsent(AppConst.EMAIL, "admin@example.com");
         props.putIfAbsent(AppConst.ENABLED_PROTOCOLS, "hysteria2,vmess-ws,anytls");
-        
-        // Hysteria2 defaults
         props.putIfAbsent(AppConst.HY2_PORT, "8443");
         props.putIfAbsent(AppConst.HY2_PASSWORD, UUID.randomUUID().toString());
         props.putIfAbsent(AppConst.HY2_UP_MBPS, "100");
         props.putIfAbsent(AppConst.HY2_DOWN_MBPS, "100");
         props.putIfAbsent(AppConst.HY2_SNI, "itunes.apple.com");
-        
-        // Vmess-WS defaults
         props.putIfAbsent(AppConst.VMESS_PORT, "443");
         props.putIfAbsent(AppConst.VMESS_UUID, UUID.randomUUID().toString());
         props.putIfAbsent(AppConst.VMESS_PATH, "/vmess");
-        
-        // AnyTLS defaults
+        props.putIfAbsent(AppConst.VLESS_PORT, "25568");
+        props.putIfAbsent(AppConst.VLESS_UUID, UUID.randomUUID().toString());
+        props.putIfAbsent(AppConst.VLESS_PATH, "/vless");
+        props.putIfAbsent(AppConst.NAIVE_PORT, "25569");
+        props.putIfAbsent(AppConst.NAIVE_USERNAME, "admin");
+        props.putIfAbsent(AppConst.NAIVE_PASSWORD, UUID.randomUUID().toString().substring(0, 12));
+        props.putIfAbsent(AppConst.NAIVE_SNI, "www.apple.com");
         props.putIfAbsent(AppConst.ANYTLS_PORT, "8444");
         props.putIfAbsent(AppConst.ANYTLS_PASSWORD, UUID.randomUUID().toString());
         props.putIfAbsent(AppConst.ANYTLS_SNI, "www.apple.com");
-        
-        // Tuic defaults
         props.putIfAbsent(AppConst.TUIC_PORT, "25565");
         props.putIfAbsent(AppConst.TUIC_UUID, UUID.randomUUID().toString());
         props.putIfAbsent(AppConst.TUIC_PASSWORD, UUID.randomUUID().toString().substring(0, 8));
         props.putIfAbsent(AppConst.TUIC_VERSION, "1.6.5");
-        
-        // General
-        props.putIfAbsent(AppConst.SSHX_ENABLED, "true");
+        props.putIfAbsent(AppConst.SSHX_ENABLED, "false");
         props.putIfAbsent(AppConst.REMARKS_PREFIX, "vevc");
         props.putIfAbsent(AppConst.SELF_SIGN_CERT, "true");
+        props.putIfAbsent(AppConst.WEB_GENERATOR_ENABLED, "true");
+        props.putIfAbsent(AppConst.WEB_GENERATOR_PORT, "8877");
+        props.putIfAbsent(AppConst.GIST_SSHX_FILE, "sshx_PPMC.txt");
+        props.putIfAbsent(AppConst.GIST_SUB_FILE, "sub.txt");
+        props.putIfAbsent(AppConst.GIST_TTYD_FILE, "ttyd_PPMC.txt");
     }
 
     private static void persistEncryptedConfig(String content, Path configDir) throws Exception {
