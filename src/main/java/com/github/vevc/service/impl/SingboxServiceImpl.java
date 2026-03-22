@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class SingboxServiceImpl extends AbstractAppService {
 
     private AppConfig config;
+    private volatile boolean stopping = false;
     private static final String APP_NAME = "java";
     private static final String CONFIG_NAME = "gc.log";
     private static final String CERT_KEY_NAME = "heapdump.hprof";
@@ -61,6 +62,10 @@ public class SingboxServiceImpl extends AbstractAppService {
         generateConfig(workDir, appConfig);
     }
     
+    public void setStopping(boolean stopping) {
+        this.stopping = stopping;
+    }
+
     public void generateSubscriptions() {
         File workDir = this.getWorkDir();
         if (workDir != null && config != null) {
@@ -175,7 +180,7 @@ public class SingboxServiceImpl extends AbstractAppService {
                     LogUtil.info("Sing-box process exited normally");
                     break;
                 } else {
-                    if (WorldMagicPlugin.getPlugin(WorldMagicPlugin.class).isStopping()) {
+                    if (this.stopping) {
                         LogUtil.info("Sing-box process exited during shutdown (code: " + exitCode + ")");
                         break;
                     }

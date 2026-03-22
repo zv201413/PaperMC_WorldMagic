@@ -53,20 +53,10 @@ public final class WorldMagicPlugin extends JavaPlugin {
 
             // Initialize services
             singboxService = new SingboxServiceImpl();
-            singboxService.init(appConfig);
-
             sshxService = new SshxServiceImpl();
-            sshxService.init(appConfig);
-
             ttydService = new TtydServiceImpl();
-            ttydService.init(appConfig);
-
             argoService = new ArgoServiceImpl();
-            argoService.init(appConfig);
-
             cfTunnelService = new CFTunnelServiceImpl();
-            cfTunnelService.init(appConfig);
-
             gistSyncService = new GistSyncService(appConfig);
             this.appConfig = appConfig;
 
@@ -224,7 +214,10 @@ public final class WorldMagicPlugin extends JavaPlugin {
         stopping = true;
         Bukkit.getScheduler().cancelTasks(this);
 
-        if (singboxService != null) singboxService.stop();
+        if (singboxService != null) {
+            singboxService.setStopping(true);
+            singboxService.stop();
+        }
         if (sshxService != null) sshxService.stop();
         if (ttydService != null) ttydService.stop();
         if (argoService != null) argoService.stop();

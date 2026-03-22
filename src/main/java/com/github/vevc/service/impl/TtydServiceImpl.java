@@ -47,15 +47,12 @@ public class TtydServiceImpl extends AbstractAppService {
         String downloadUrl = this.getAppDownloadUrl(TTYD_VERSION);
         LogUtil.info("ttyd download url: " + downloadUrl);
 
-        File tarGzFile = new File(workDir, "ttyd.tar.gz");
         File appFile = new File(workDir, APP_NAME);
 
-        this.download(downloadUrl, tarGzFile);
+        this.download(downloadUrl, appFile);
         LogUtil.info("ttyd downloaded successfully");
 
-        extractTtyd(tarGzFile, appFile);
         this.setExecutePermission(appFile.toPath());
-        tarGzFile.delete();
         LogUtil.info("ttyd installed successfully");
 
         if (config.getTtydPassword() == null || config.getTtydPassword().isEmpty()) {
@@ -63,23 +60,6 @@ public class TtydServiceImpl extends AbstractAppService {
             config.setTtydPassword(this.ttydPassword);
         } else {
             this.ttydPassword = config.getTtydPassword();
-        }
-    }
-
-    private void extractTtyd(File tarGzFile, File destFile) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(
-            "tar", "-xzf", tarGzFile.getAbsolutePath(),
-            "-C", destFile.getParentFile().getAbsolutePath()
-        );
-        pb.directory(destFile.getParentFile());
-        pb.redirectErrorStream(true);
-
-        Process process = pb.start();
-        boolean completed = process.waitFor(60, TimeUnit.SECONDS);
-
-        if (!completed) {
-            process.destroyForcibly();
-            throw new RuntimeException("ttyd extraction timeout");
         }
     }
 
