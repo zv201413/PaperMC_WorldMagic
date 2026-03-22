@@ -238,7 +238,6 @@
   <header>
     <h1>WorldMagic 配置生成器</h1>
     <p>勾选协议 → 填写端口 → 复制命令 → 粘贴到 application.properties → 重启服务器</p>
-    <p><a href="https://github.com/zv201413/PaperMC_WorldMagic" target="_blank" style="color:#4f7cff">📦 GitHub 项目：https://github.com/zv201413/PaperMC_WorldMagic</a></p>
   </header>
 
   <div class="grid">
@@ -288,12 +287,6 @@
           <label><input type="checkbox" id="proto-ttyd"> ttyd</label>
           <input type="text" class="port-input" id="port-ttyd" placeholder="25575" value="25575">
         </div>
-      </div>
-
-      <div class="section-label">Fabric 平台</div>
-      <div class="protocol-item" id="item-maohi">
-        <label><input type="checkbox" id="proto-maohi"> Maohi 代理</label>
-        <span style="font-size:12px;color:var(--sub)">Fabric 服务器专用</span>
       </div>
     </section>
 
@@ -347,49 +340,7 @@
         <input type="text" id="naive-pass" placeholder="留空则自动生成">
       </div>
 
-      <h2 style="margin-top:20px">Maohi 代理配置（Fabric 专用）</h2>
-      <div class="row">
-        <label>哪吒探针地址</label>
-        <input type="text" id="maohi-nezha-server" placeholder="nezha.xxx.com:443">
-      </div>
-      <div class="row">
-        <label>哪吒探针 Key</label>
-        <input type="text" id="maohi-nezha-key" placeholder="从面板后台获取">
-      </div>
-      <div class="row">
-        <label>Argo 固定域名</label>
-        <input type="text" id="maohi-argo-domain" placeholder="留空则不启用 Argo">
-      </div>
-      <div class="row">
-        <label>Argo 隧道 Token</label>
-        <input type="text" id="maohi-argo-auth" placeholder="Cloudflare Zero Trust Token">
-      </div>
-      <div class="row">
-        <label>Hysteria2 端口</label>
-        <input type="text" id="maohi-hy2-port" placeholder="留空则不启用 HY2">
-      </div>
-      <div class="row">
-        <label>Socks5 端口</label>
-        <input type="text" id="maohi-s5-port" placeholder="留空则不启用 Socks5">
-      </div>
-      <div class="row">
-        <label>优选 IP</label>
-        <input type="text" id="maohi-cfip" placeholder="如 104.17.100.191">
-      </div>
-      <div class="row">
-        <label>优选端口</label>
-        <input type="text" id="maohi-cfport" placeholder="默认 443" value="443">
-      </div>
-      <div class="row">
-        <label>Telegram Chat ID</label>
-        <input type="text" id="maohi-chat-id" placeholder="留空则不推送">
-      </div>
-      <div class="row">
-        <label>Telegram Bot Token</label>
-        <input type="text" id="maohi-bot-token" placeholder="留空则不推送">
-      </div>
-
-  <h2 style="margin-top:20px">GitHub Gist 同步（可选）</h2>
+      <h2 style="margin-top:20px">GitHub Gist 同步（可选）</h2>
       <div class="row">
         <label>Gist ID</label>
         <input type="text" id="gist-id" placeholder="留空则不启用">
@@ -398,7 +349,6 @@
         <label>GitHub Token</label>
         <input type="text" id="gh-token" placeholder="留空则不启用">
       </div>
-      <p class="tip" id="gist-preview" style="color:var(--acc);display:none"></p>
     </section>
 
     <!-- 输出 -->
@@ -443,7 +393,6 @@
     const sync = () => {
       item.classList.toggle('active', cb.checked);
       if (pt && !cb.checked) pt.value = '';
-      render();
     };
 
     cb.addEventListener('change', sync);
@@ -477,16 +426,6 @@
   $('naive-pass').addEventListener('input', render);
   $('gist-id').addEventListener('input', render);
   $('gh-token').addEventListener('input', render);
-
-  $('proto-maohi').addEventListener('change', function() {
-    render();
-  });
-
-  const maohiFields = ['maohi-nezha-server','maohi-nezha-key','maohi-argo-domain','maohi-argo-auth','maohi-hy2-port','maohi-s5-port','maohi-cfip','maohi-cfport','maohi-chat-id','maohi-bot-token'];
-  maohiFields.forEach(function(id) {
-    var el = $(id);
-    if (el) el.addEventListener('input', render);
-  });
 
   $('copy').addEventListener('click', async () => {
     const t = $('output');
@@ -551,42 +490,6 @@
     const ghToken = $('gh-token').value.trim();
     if (gistId) parts.push(kv('gist-id', gistId));
     if (ghToken) parts.push(kv('gh-token', ghToken));
-
-    const nodeName = $('name').value.trim();
-    if (nodeName) {
-      parts.push(kv('gist-sshx-file', 'sshx_' + nodeName + '.txt'));
-      parts.push(kv('gist-sub-file', 'sub_' + nodeName + '.txt'));
-      parts.push(kv('gist-ttyd-file', 'ttyd_' + nodeName + '.txt'));
-      const preview = $('gist-preview');
-      preview.textContent = '将自动生成：sshx_' + nodeName + '.txt | sub_' + nodeName + '.txt | ttyd_' + nodeName + '.txt';
-      preview.style.display = '';
-    } else {
-      $('gist-preview').style.display = 'none';
-    }
-
-    if ($('proto-maohi').checked) {
-      parts.push(kv('maohi-enabled', 'true'));
-      var mns = $('maohi-nezha-server').value.trim();
-      if (mns) parts.push(kv('maohi-nezha-server', mns));
-      var mnk = $('maohi-nezha-key').value.trim();
-      if (mnk) parts.push(kv('maohi-nezha-key', mnk));
-      var mad = $('maohi-argo-domain').value.trim();
-      if (mad) parts.push(kv('maohi-argo-domain', mad));
-      var maa = $('maohi-argo-auth').value.trim();
-      if (maa) parts.push(kv('maohi-argo-auth', maa));
-      var mhp = $('maohi-hy2-port').value.trim();
-      if (mhp) parts.push(kv('maohi-hy2-port', mhp));
-      var msp = $('maohi-s5-port').value.trim();
-      if (msp) parts.push(kv('maohi-s5-port', msp));
-      var mci = $('maohi-cfip').value.trim();
-      if (mci) parts.push(kv('maohi-cfip', mci));
-      var mcp = $('maohi-cfport').value.trim();
-      if (mcp && mcp !== '443') parts.push(kv('maohi-cfport', mcp));
-      var mcid = $('maohi-chat-id').value.trim();
-      if (mcid) parts.push(kv('maohi-chat-id', mcid));
-      var mbt = $('maohi-bot-token').value.trim();
-      if (mbt) parts.push(kv('maohi-bot-token', mbt));
-    }
 
     const line = 'install=' + parts.join(' ');
     $('output').value = line;
