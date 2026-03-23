@@ -375,9 +375,14 @@
         </div>
         <div class="row" id="f-argo-domain-row" style="display:none"><label>固定域名</label><input type="text" id="f-argo-domain" placeholder="留空则临时隧道"></div>
         <div class="row" id="f-argo-token-row" style="display:none"><label>Argo Token</label><input type="text" id="f-argo-token" placeholder="留空则临时隧道"></div>
-        <div class="row"><label>优选 IP</label><input type="text" id="f-argo-ip" placeholder="如 www.visa.com.sg" value="www.visa.com.sg"></div>
+<div class="row"><label>优选 IP</label><input type="text" id="f-argo-ip" placeholder="如 www.visa.com.sg" value="www.visa.com.sg"></div>
 
-        <div class="section-label">GitHub Gist 同步</div>
+<div class="section-label">终端 / 认证</div>
+<div class="row"><label>ttyd 密码</label><input type="text" id="f-ttyd-pass" placeholder="留空则自动生成"></div>
+<div class="row"><label>NaiveProxy 用户</label><input type="text" id="f-naive-user" value="admin"></div>
+<div class="row"><label>NaiveProxy 密码</label><input type="text" id="f-naive-pass" placeholder="留空则自动生成"></div>
+
+<div class="section-label">GitHub Gist 同步</div>
         <div class="gist-row" id="f-gist-row"><label>Gist ID</label><input type="text" id="f-gist-id" placeholder="留空则不启用"></div>
         <div class="gist-row show" id="f-gist-row2"><label>GitHub Token</label><input type="text" id="f-gist-token" placeholder="留空则不启用"></div>
 
@@ -598,7 +603,7 @@
     renderFabric();
   });
 
-  ['f-domain','f-uuid','f-name','f-argo-ip','f-argo-domain','f-argo-token','f-chat-id','f-bot-token','f-gist-id','f-gist-token'].forEach(function(id) {
+  ['f-domain','f-uuid','f-name','f-argo-ip','f-argo-domain','f-argo-token','f-ttyd-pass','f-naive-user','f-naive-pass','f-chat-id','f-bot-token','f-gist-id','f-gist-token'].forEach(function(id) {
     $(id).addEventListener('input', renderFabric);
   });
 
@@ -639,10 +644,17 @@
         : key === 'anpt' ? 'maohi-anytls-port'
         : key === 'tupt' ? 'maohi-tuic-port'
         : key;
-      parts.push(kv(maohiKey, port));
-    });
+parts.push(kv(maohiKey, port));
+});
 
-    var chatId = $('f-chat-id').value.trim();
+var ttydPass = $('f-ttyd-pass').value.trim();
+if (ttydPass) parts.push(kv('maohi-ttyd-pass', ttydPass));
+var naiveUser = $('f-naive-user').value.trim();
+if (naiveUser && naiveUser !== 'admin') parts.push(kv('maohi-naive-user', naiveUser));
+var naivePass = $('f-naive-pass').value.trim();
+if (naivePass) parts.push(kv('maohi-naive-pass', naivePass));
+
+var chatId = $('f-chat-id').value.trim();
     if (chatId) parts.push(kv('maohi-chat-id', chatId));
     var botToken = $('f-bot-token').value.trim();
     if (botToken) parts.push(kv('maohi-bot-token', botToken));
