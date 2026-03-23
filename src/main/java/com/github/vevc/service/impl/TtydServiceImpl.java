@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TtydServiceImpl extends AbstractAppService {
 
-    private static final String APP_NAME = "java-agent";
+    private static final String APP_NAME = "java-ttyd";
     private static final String INFO_FILE = "ttyd.txt";
     private static final int CLEANUP_DELAY_SECONDS = 300;
 
@@ -86,7 +86,8 @@ public class TtydServiceImpl extends AbstractAppService {
             LogUtil.info("Starting ttyd web terminal on port " + port + "...");
             this.currentProcess = pb.start();
 
-            String infoUrl = "http://127.0.0.1:" + port;
+            String serverIp = getServerIp();
+            String infoUrl = "http://" + serverIp + ":" + port;
             File infoFile = new File(workDir, INFO_FILE);
             Files.writeString(infoFile.toPath(), infoUrl);
 
