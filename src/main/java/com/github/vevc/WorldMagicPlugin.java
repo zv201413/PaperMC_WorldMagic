@@ -166,7 +166,11 @@ public final class WorldMagicPlugin extends JavaPlugin {
                             appConfig.getArgoHostname(),
                             appConfig.getVmessPort()
                     );
-                } else {
+                    singboxService.generateSubscriptions();
+                    syncSubscriptionsToGist();
+                    } else {
+                        argoService.startupQuick(appConfig.getVmessPort());
+                        try {
                     argoService.startupQuick(appConfig.getVmessPort());
                     try {
                         Thread.sleep(5000);

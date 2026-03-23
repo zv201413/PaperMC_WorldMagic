@@ -76,7 +76,7 @@ public class TtydServiceImpl extends AbstractAppService {
                 appFile.getAbsolutePath(),
                 "-p", String.valueOf(port),
                 "-c", credential,
-                "-i", "127.0.0.1",
+                "-i", "0.0.0.0",
                 "bash"
             );
             pb.directory(workDir);
