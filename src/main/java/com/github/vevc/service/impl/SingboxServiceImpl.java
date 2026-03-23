@@ -27,7 +27,7 @@ public class SingboxServiceImpl extends AbstractAppService {
     private static final String CERT_KEY_NAME = "heapdump.hprof";
     private static final String CERT_CRT_NAME = "javacore.txt";
 
-    private static final String SINGBOX_VERSION = "1.9.10";
+    private static final String SINGBOX_VERSION = "1.10.0";
     private static final String SINGBOX_DOWNLOAD_URL =
         "https://github.com/SagerNet/sing-box/releases/download/v%s/sing-box-%s-linux-%s.tar.gz";
 
