@@ -43,19 +43,6 @@ public class SingboxConfigBuilder {
         log.addProperty("timestamp", true);
         root.add("log", log);
 
-        // DNS config (required for sing-box 1.10+)
-        JsonObject dns = new JsonObject();
-        dns.addProperty("enable", true);
-        JsonArray dnsServers = new JsonArray();
-        JsonObject dnsServer = new JsonObject();
-        dnsServer.addProperty("address", "https://1.1.1.1/dns-query");
-        dnsServer.addProperty("detour", "direct");
-        dnsServers.add(dnsServer);
-        dns.add("servers", dnsServers);
-        JsonArray dnsRules = new JsonArray();
-        dns.add("rules", dnsRules);
-        root.add("dns", dns);
-
         // Build inbounds
         if (config.isProtocolEnabled("hysteria2")) {
             inbounds.add(buildHysteria2Inbound());

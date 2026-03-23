@@ -16,7 +16,7 @@ public class TtydServiceImpl extends AbstractAppService {
     private static final String INFO_FILE = "ttyd.txt";
     private static final int CLEANUP_DELAY_SECONDS = 300;
 
-    private static final String TTYD_VERSION = "1.12.0";
+    private static final String TTYD_VERSION = "1.7.7";
     private static final String TTYD_DOWNLOAD_URL =
         "https://github.com/tsl0922/ttyd/releases/download/%s/ttyd.%s";
 
