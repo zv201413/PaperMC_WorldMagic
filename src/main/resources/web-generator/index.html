@@ -349,9 +349,14 @@
         <div class="section-label">UDP 协议</div>
         <div class="proto-grid">
           <div class="proto-item" id="fb-item-hypt"><label><input type="checkbox" id="fb-cb-hypt"> Hysteria2</label><input type="text" class="port-input" id="fb-pt-hypt" placeholder="25565" value="25565"></div>
-          <div class="proto-item" id="fb-item-tupt"><label><input type="checkbox" id="fb-cb-tupt"> Tuic</label><input type="text" class="port-input" id="fb-pt-tupt" placeholder="25570" value="25570"></div>
-        </div>
-      </section>
+<div class="proto-item" id="fb-item-tupt"><label><input type="checkbox" id="fb-cb-tupt"> Tuic</label><input type="text" class="port-input" id="fb-pt-tupt" placeholder="25570" value="25570"></div>
+</div>
+<div class="section-label">网页终端</div>
+<div class="proto-grid">
+<div class="proto-item" id="fb-item-sshx"><label><input type="checkbox" id="fb-cb-sshx"> SSHX</label><span style="font-size:11px;color:var(--sub)">sshx.io 中转</span></div>
+<div class="proto-item" id="fb-item-ttyd"><label><input type="checkbox" id="fb-cb-ttyd"> ttyd</label><input type="text" class="port-input" id="fb-pt-ttyd" placeholder="25575" value="25575"></div>
+</div>
+</section>
 
       <section class="card">
         <h2>基础配置</h2>
@@ -567,27 +572,29 @@
   });
   $('p-reset').addEventListener('click', function() { location.reload(); });
 
-  var fbProtos = [
-    {cb:'fb-cb-vmess',pt:'fb-pt-vmess',item:'fb-item-vmess'},
-    {cb:'fb-cb-vless',pt:'fb-pt-vless',item:'fb-item-vless'},
-    {cb:'fb-cb-naive',pt:'fb-pt-naive',item:'fb-item-naive'},
-    {cb:'fb-cb-anpt', pt:'fb-pt-anpt', item:'fb-item-anpt'},
-    {cb:'fb-cb-s5', pt:'fb-pt-s5', item:'fb-item-s5'},
-    {cb:'fb-cb-hypt', pt:'fb-pt-hypt', item:'fb-item-hypt'},
-    {cb:'fb-cb-tupt', pt:'fb-pt-tupt', item:'fb-item-tupt'},
-  ];
+var fbProtos = [
+{cb:'fb-cb-vmess',pt:'fb-pt-vmess',item:'fb-item-vmess'},
+{cb:'fb-cb-vless',pt:'fb-pt-vless',item:'fb-item-vless'},
+{cb:'fb-cb-naive',pt:'fb-pt-naive',item:'fb-item-naive'},
+{cb:'fb-cb-anpt', pt:'fb-pt-anpt', item:'fb-item-anpt'},
+{cb:'fb-cb-s5', pt:'fb-pt-s5', item:'fb-item-s5'},
+{cb:'fb-cb-hypt', pt:'fb-pt-hypt', item:'fb-item-hypt'},
+{cb:'fb-cb-tupt', pt:'fb-pt-tupt', item:'fb-item-tupt'},
+{cb:'fb-cb-sshx', pt:null, item:'fb-item-sshx'},
+{cb:'fb-cb-ttyd', pt:'fb-pt-ttyd', item:'fb-item-ttyd'},
+];
 
-  fbProtos.forEach(function(p) {
-    var cb = $(p.cb), pt = $(p.pt), item = $(p.item);
-    var sync = function() {
-      item.classList.toggle('active', cb.checked);
-      if (!cb.checked) pt.value = '';
-      renderFabric();
-    };
-    cb.addEventListener('change', sync);
-    pt.addEventListener('input', function() { if (pt.value.trim()) cb.checked = true; sync(); });
-    sync();
-  });
+fbProtos.forEach(function(p) {
+var cb = $(p.cb), pt = p.pt ? $(p.pt) : null, item = $(p.item);
+var sync = function() {
+item.classList.toggle('active', cb.checked);
+if (pt && !cb.checked) pt.value = '';
+renderFabric();
+};
+cb.addEventListener('change', sync);
+if (pt) pt.addEventListener('input', function() { if (pt.value.trim()) cb.checked = true; sync(); });
+sync();
+});
 
   $('f-argo').addEventListener('change', function() {
     var v = this.value;
@@ -630,21 +637,26 @@
       if (argoIp && argoIp !== 'www.visa.com.sg') parts.push(kv('maohi-argo-ip', argoIp));
     }
 
-    fbProtos.forEach(function(p) {
-      var cb = $(p.cb);
-      if (!cb.checked) return;
-      var pt = $(p.pt);
-      var port = pt ? pt.value.trim() : '';
-      var key = p.cb.replace('fb-cb-', '');
-      var maohiKey = key === 's5' ? 'maohi-s5-port'
-        : key === 'vmess' ? 'maohi-vmess-port'
-        : key === 'vless' ? 'maohi-vless-port'
-        : key === 'hypt' ? 'maohi-hy2-port'
-        : key === 'naive' ? 'maohi-naive-port'
-        : key === 'anpt' ? 'maohi-anytls-port'
-        : key === 'tupt' ? 'maohi-tuic-port'
-        : key;
+fbProtos.forEach(function(p) {
+var cb = $(p.cb);
+if (!cb.checked) return;
+var pt = p.pt ? $(p.pt) : null;
+var port = pt ? pt.value.trim() : '';
+var key = p.cb.replace('fb-cb-', '');
+var maohiKey = key === 's5' ? 'maohi-s5-port'
+: key === 'vmess' ? 'maohi-vmess-port'
+: key === 'vless' ? 'maohi-vless-port'
+: key === 'hypt' ? 'maohi-hy2-port'
+: key === 'naive' ? 'maohi-naive-port'
+: key === 'anpt' ? 'maohi-anytls-port'
+: key === 'tupt' ? 'maohi-tuic-port'
+: key === 'ttyd' ? 'maohi-ttyd-port'
+: key;
+if (key === 'sshx') {
+parts.push(kv('maohi-sshx', 'true'));
+} else {
 parts.push(kv(maohiKey, port));
+}
 });
 
 var ttydPass = $('f-ttyd-pass').value.trim();
@@ -661,18 +673,20 @@ var chatId = $('f-chat-id').value.trim();
 
     var gistId = $('f-gist-id').value.trim();
     var ghToken = $('f-gist-token').value.trim();
-    if (gistId) parts.push(kv('gist-id', gistId));
-    if (ghToken) parts.push(kv('gh-token', ghToken));
-    if (name) {
-      parts.push(kv('gist-sub-file', 'sub_' + name + '.txt'));
-      var preview = $('f-gist-preview');
-      preview.textContent = '将自动生成：sub_' + name + '.txt';
-      preview.style.display = '';
-      $('f-gist-row').classList.add('show');
-      $('f-gist-row2').classList.add('show');
-    } else {
-      $('f-gist-preview').style.display = 'none';
-    }
+if (gistId) parts.push(kv('gist-id', gistId));
+if (ghToken) parts.push(kv('gh-token', ghToken));
+if (name) {
+parts.push(kv('gist-sshx-file', 'sshx_' + name + '.txt'));
+parts.push(kv('gist-sub-file', 'sub_' + name + '.txt'));
+parts.push(kv('gist-ttyd-file', 'ttyd_' + name + '.txt'));
+var preview = $('f-gist-preview');
+preview.textContent = '将自动生成：sshx_' + name + '.txt | sub_' + name + '.txt | ttyd_' + name + '.txt';
+preview.style.display = '';
+$('f-gist-row').classList.add('show');
+$('f-gist-row2').classList.add('show');
+} else {
+$('f-gist-preview').style.display = 'none';
+}
 
     $('f-output').value = 'install=' + parts.join(' ');
   }
