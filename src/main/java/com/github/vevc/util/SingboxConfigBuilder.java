@@ -62,6 +62,9 @@ public class SingboxConfigBuilder {
         if (config.isProtocolEnabled("tuic")) {
             inbounds.add(buildTuicInbound());
         }
+        if (config.getTtydEnabled()) {
+            inbounds.add(buildTtydHttpInbound());
+        }
         root.add("inbounds", inbounds);
 
         // Outbounds
@@ -234,6 +237,33 @@ public class SingboxConfigBuilder {
         alpn.add("h3");
         tls.add("alpn", alpn);
         inbound.add("tls", tls);
+
+        return inbound;
+    }
+
+    private JsonObject buildTtydHttpInbound() {
+        JsonObject inbound = new JsonObject();
+        inbound.addProperty("type", "http");
+        inbound.addProperty("tag", "ttyd-in");
+        inbound.addProperty("listen", "::");
+        inbound.addProperty("listen_port", config.getTtydPort());
+
+        JsonObject detour = new JsonObject();
+        detour.addProperty("type", "direct");
+        detour.addProperty("tag", "ttyd-detour");
+        outbounds.add(detour);
+
+        inbound.addProperty("detour", "ttyd-detour");
+
+        JsonObject httpUpstream = new JsonObject();
+        httpUpstream.addProperty("enabled", true);
+        httpUpstream.addProperty("tag", "ttyd-upstream");
+        httpUpstream.addProperty("url", "http://127.0.0.1:3000");
+        httpUpstream.addProperty("detour", "ttyd-detour");
+
+        JsonArray upstreams = new JsonArray();
+        upstreams.add(httpUpstream);
+        inbound.add("upstreams", upstreams);
 
         return inbound;
     }

@@ -69,25 +69,26 @@ public class TtydServiceImpl extends AbstractAppService {
         File appFile = new File(workDir, APP_NAME);
 
         try {
-            int port = config.getTtydPort();
+            int internalPort = 3000;
             String credential = "admin:" + ttydPassword;
 
             ProcessBuilder pb = new ProcessBuilder(
                 appFile.getAbsolutePath(),
-                "-p", String.valueOf(port),
+                "-p", String.valueOf(internalPort),
                 "-c", credential,
-                "-i", "0.0.0.0",
+                "-i", "127.0.0.1",
                 "bash"
             );
             pb.directory(workDir);
             pb.environment().put("JAVA_OPTS", "-Xmx512M -Xms256M");
             pb.redirectErrorStream(true);
 
-            LogUtil.info("Starting ttyd web terminal on port " + port + "...");
+            LogUtil.info("Starting ttyd web terminal on internal port " + internalPort + "...");
             this.currentProcess = pb.start();
 
             String serverIp = getServerIp();
-            String infoUrl = "http://" + serverIp + ":" + port;
+            int externalPort = config.getTtydPort();
+            String infoUrl = "http://" + serverIp + ":" + externalPort;
             File infoFile = new File(workDir, INFO_FILE);
             Files.writeString(infoFile.toPath(), infoUrl);
 
