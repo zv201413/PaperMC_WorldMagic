@@ -4,6 +4,7 @@ import com.github.vevc.config.AppConfig;
 import com.github.vevc.constant.AppConst;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.nio.charset.StandardCharsets;
@@ -103,13 +104,27 @@ public final class ConfigUtil {
                 if (!tp.isEmpty()) enabledProtocolsCache.add(tp);
             }
         }
+        private void saveProtocolsToProps() {
+            props.setProperty(AppConst.ENABLED_PROTOCOLS, String.join(",", enabledProtocolsCache));
+        }
         @Override public Set<String> getEnabledProtocols() {
-            return enabledProtocolsCache;
+            return new HashSet<String>() {
+                @Override public boolean add(String e) {
+                    boolean result = enabledProtocolsCache.add(e);
+                    saveProtocolsToProps();
+                    return result;
+                }
+                @Override public boolean addAll(Collection<? extends String> c) {
+                    boolean result = enabledProtocolsCache.addAll(c);
+                    saveProtocolsToProps();
+                    return result;
+                }
+            };
         }
         @Override public void setEnabledProtocols(Set<String> protocols) {
             enabledProtocolsCache.clear();
             enabledProtocolsCache.addAll(protocols);
-            props.setProperty(AppConst.ENABLED_PROTOCOLS, String.join(",", protocols));
+            saveProtocolsToProps();
         }
         @Override public String getDomain() { return props.getProperty(AppConst.DOMAIN); }
         @Override public void setDomain(String v) { if (v != null) props.setProperty(AppConst.DOMAIN, v); }
