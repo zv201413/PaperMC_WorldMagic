@@ -432,24 +432,9 @@ public class SingboxConfigBuilder {
         String host = useArgo() ? config.getArgoHostname() : config.getDomain();
         String path = useArgo() ? "/vless-argo?ed=2560" : config.getVlessPath();
 
-        JsonObject vless = new JsonObject();
-        vless.addProperty("v", "2");
-        vless.addProperty("ps", nodeName);
-        vless.addProperty("add", add);
-        vless.addProperty("port", port);
-        vless.addProperty("id", config.getVlessUuid());
-        vless.addProperty("aid", 0);
-        vless.addProperty("scy", "auto");
-        vless.addProperty("net", "ws");
-        vless.addProperty("type", "none");
-        vless.addProperty("host", host);
-        vless.addProperty("path", path);
-        vless.addProperty("tls", "tls");
-        vless.addProperty("sni", sni);
-        vless.addProperty("alpn", "h2");
-        vless.addProperty("fp", "chrome");
-        vless.addProperty("allowInsecure", 1);
-        return "vmess://" + Base64.getEncoder().encodeToString(vless.toString().getBytes(StandardCharsets.UTF_8));
+        String vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
+                config.getVlessUuid(), add, port, sni, host, path, nodeName);
+        return vlessLink;
     }
 
     private String buildNaiveLink(String serverIp) {
