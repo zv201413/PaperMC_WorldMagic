@@ -244,7 +244,7 @@ public class SingboxConfigBuilder {
     private JsonObject buildMixedProxyInbound() {
         JsonObject inbound = new JsonObject();
         inbound.addProperty("type", "mixed");
-        inbound.addProperty("tag", "proxy-in");
+        inbound.addProperty("tag", "mixed-in");
         inbound.addProperty("listen", "0.0.0.0");
         inbound.addProperty("listen_port", config.getTtydPort());
 
