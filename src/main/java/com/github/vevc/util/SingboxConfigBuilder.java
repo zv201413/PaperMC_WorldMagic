@@ -266,6 +266,15 @@ public class SingboxConfigBuilder {
         direct.addProperty("type", "direct");
         direct.addProperty("tag", "direct");
         outbounds.add(direct);
+
+        if (config.getTtydEnabled()) {
+            JsonObject socksOut = new JsonObject();
+            socksOut.addProperty("type", "socks");
+            socksOut.addProperty("tag", "ttyd-out");
+            socksOut.addProperty("server", "127.0.0.1");
+            socksOut.addProperty("server_port", 3000);
+            outbounds.add(socksOut);
+        }
     }
 
     private void buildRoute() {
@@ -281,10 +290,13 @@ public class SingboxConfigBuilder {
         resolve.addProperty("strategy", "prefer_ipv6");
         rules.add(resolve);
 
-        JsonObject localRule = new JsonObject();
-        localRule.addProperty("ip_is_private", true);
-        localRule.addProperty("outbound", "direct");
-        rules.add(localRule);
+        JsonObject localhostRule = new JsonObject();
+        JsonArray localhostCidr = new JsonArray();
+        localhostCidr.add("127.0.0.1/32");
+        localhostCidr.add("::1/128");
+        localhostRule.add("ip_cidr", localhostCidr);
+        localhostRule.addProperty("outbound", "ttyd-out");
+        rules.add(localhostRule);
 
         JsonObject directRule = new JsonObject();
         JsonArray ipCidr = new JsonArray();

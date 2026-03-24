@@ -170,6 +170,24 @@ public class SingboxServiceImpl extends AbstractAppService {
         LogUtil.info("Sing-box config generated");
     }
 
+    private void logStartupStatus() {
+        StringBuilder sb = new StringBuilder();
+        if (config.isProtocolEnabled("hysteria2")) {
+            sb.append("Hy2 节点已就绪（端口：").append(config.getHy2Port()).append("）");
+        }
+        if (config.isProtocolEnabled("tuic")) {
+            if (sb.length() > 0) sb.append("，");
+            sb.append("Tuic 节点已就绪（端口：").append(config.getTuicPort()).append("）");
+        }
+        if (config.getTtydEnabled()) {
+            if (sb.length() > 0) sb.append("，");
+            sb.append("管理终端已通过代理转发至本地（ttyd@127.0.0.1:3000）");
+        }
+        if (sb.length() > 0) {
+            LogUtil.info("[WorldMagic] " + sb);
+        }
+    }
+
     private void generateSubscriptionFiles(File workDir, AppConfig config) throws Exception {
         String serverIp = getServerIp();
         SingboxConfigBuilder builder = new SingboxConfigBuilder(config);
@@ -206,6 +224,8 @@ public class SingboxServiceImpl extends AbstractAppService {
 
                 LogUtil.info("Starting Sing-box server...");
                 Process p = pb.start();
+
+                logStartupStatus();
 
                 Thread reader = new Thread(() -> {
                     try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
