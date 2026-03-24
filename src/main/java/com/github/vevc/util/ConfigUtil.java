@@ -213,7 +213,7 @@ public final class ConfigUtil {
         props.putIfAbsent(AppConst.HY2_UP_MBPS, "100");
         props.putIfAbsent(AppConst.HY2_DOWN_MBPS, "100");
         props.putIfAbsent(AppConst.HY2_SNI, "itunes.apple.com");
-        props.putIfAbsent(AppConst.VMESS_PORT, "443");
+        props.putIfAbsent(AppConst.VMESS_PORT, "25566");
         props.putIfAbsent(AppConst.VMESS_UUID, UUID.randomUUID().toString());
         props.putIfAbsent(AppConst.VMESS_PATH, "/vmess");
         props.putIfAbsent(AppConst.VLESS_PORT, "25568");
