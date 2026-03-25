@@ -278,8 +278,7 @@
         </div>
         <div class="section-label">网页终端</div>
         <div class="proto-grid">
-          <div class="proto-item" id="item-sshx"><label><input type="checkbox" id="cb-sshx"> SSHX</label><span style="font-size:11px;color:var(--sub)">sshx.io 中转</span></div>
-          <div class="proto-item" id="item-ttyd"><label><input type="checkbox" id="cb-ttyd"> ttyd</label><input type="text" class="port-input" id="pt-ttyd" placeholder="25575" value="25575"></div>
+<div class="proto-item" id="item-sshx"><label><input type="checkbox" id="cb-sshx"> SSHX</label><span style="font-size:11px;color:var(--sub)">sshx.io 中转</span></div>
         </div>
       </section>
 
@@ -308,7 +307,6 @@
         <div class="row"><label>优选 IP</label><input type="text" id="p-argo-ip" placeholder="如 www.visa.com.sg" value="www.visa.com.sg"></div>
 
         <div class="section-label">终端 / 认证</div>
-        <div class="row"><label>ttyd 密码</label><input type="text" id="p-ttyd-pass" placeholder="留空则自动生成"></div>
         <div class="row"><label>NaiveProxy 用户</label><input type="text" id="p-naive-user" value="admin"></div>
         <div class="row"><label>NaiveProxy 密码</label><input type="text" id="p-naive-pass" placeholder="留空则自动生成"></div>
 
@@ -468,7 +466,6 @@
     {cb:'cb-hypt', pt:'pt-hypt', item:'item-hypt' },
     {cb:'cb-tupt', pt:'pt-tupt', item:'item-tupt' },
     {cb:'cb-sshx', pt:null,     item:'item-sshx' },
-    {cb:'cb-ttyd', pt:'pt-ttyd',item:'item-ttyd'},
   ];
 
   paperProtos.forEach(function(p) {
@@ -492,7 +489,7 @@
     renderPaper();
   });
 
-  ['p-domain','p-uuid','p-name','p-argo-ip','p-argo-domain','p-argo-token','p-ttyd-pass','p-naive-user','p-naive-pass','p-gist-id','p-gist-token','p-chat-id','p-bot-token'].forEach(function(id) {
+  ['p-domain','p-uuid','p-name','p-argo-ip','p-argo-domain','p-argo-token','p-naive-user','p-naive-pass','p-gist-id','p-gist-token','p-chat-id','p-bot-token'].forEach(function(id) {
     $(id).addEventListener('input', renderPaper);
   });
 
@@ -521,20 +518,15 @@
       var cb = $(p.cb);
       if (!cb.checked) return;
       var key = p.cb.replace('cb-', '');
+      var pt = $(p.pt);
+      var port = pt ? pt.value.trim() : '';
       if (key === 'sshx') {
         parts.push('sshx="true"');
-      } else if (key === 'ttyd') {
-        var port = $('pt-ttyd').value.trim() || '25575';
-        parts.push('ttyd="' + port + '"');
-      } else {
-        var pt = $(p.pt);
-        var port = pt ? pt.value.trim() : '';
+      } else if (port) {
         parts.push(kv(key, port));
       }
     });
 
-    var ttydPass = $('p-ttyd-pass').value.trim();
-    if (ttydPass) parts.push(kv('ttyd-pass', ttydPass));
     var naiveUser = $('p-naive-user').value.trim();
     if (naiveUser && naiveUser !== 'admin') parts.push(kv('naive-user', naiveUser));
     var naivePass = $('p-naive-pass').value.trim();
@@ -553,9 +545,8 @@
     if (name) {
       parts.push(kv('gist-sshx-file', 'sshx_' + name + '.txt'));
       parts.push(kv('gist-sub-file', 'sub_' + name + '.txt'));
-      parts.push(kv('gist-ttyd-file', 'ttyd_' + name + '.txt'));
       var preview = $('p-gist-preview');
-      preview.textContent = '将自动生成：sshx_' + name + '.txt | sub_' + name + '.txt | ttyd_' + name + '.txt';
+      preview.textContent = '将自动生成：sshx_' + name + '.txt | sub_' + name + '.txt';
       preview.style.display = '';
       $('p-gist-row').classList.add('show');
       $('p-gist-row2').classList.add('show');
