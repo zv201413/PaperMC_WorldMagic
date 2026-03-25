@@ -350,7 +350,7 @@ public class SingboxConfigBuilder {
         int port = useArgo() ? 443 : config.getVmessPort();
         String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
         String host = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String path = useArgo() ? "/vmess-argo?ed=2560" : config.getVmessPath();
+        String path = useArgo() ? "/vmess-argo" : config.getVmessPath();
         
         JsonObject vmess = new JsonObject();
         vmess.addProperty("v", "2");
@@ -391,7 +391,7 @@ public class SingboxConfigBuilder {
         int port = useArgo() ? config.getArgoCfPort() : config.getVlessPort();
         String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
         String host = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String path = useArgo() ? "/vless-argo?ed=2560" : config.getVlessPath();
+        String path = useArgo() ? "/vless-argo" : config.getVlessPath();
 
         String vlessLink;
         if (useArgo()) {
