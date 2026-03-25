@@ -43,6 +43,9 @@ public class InstallCommandParser {
     public static void applyToConfig(Properties props, AppConfig config) {
         if (props.isEmpty()) return;
 
+        config.setTtydEnabled(false);
+        config.setSshxEnabled(false);
+
         if (props.containsKey("domain")) config.setDomain(props.getProperty("domain"));
         if (props.containsKey("uuid")) config.setVmessUuid(props.getProperty("uuid"));
         if (props.containsKey("name")) config.setRemarksPrefix(props.getProperty("name"));

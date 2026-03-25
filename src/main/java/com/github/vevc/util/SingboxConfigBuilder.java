@@ -339,7 +339,7 @@ public class SingboxConfigBuilder {
         boolean hasValidToken = argoToken != null && !argoToken.isEmpty() && 
                                !argoToken.contains("your-cloudflare-tunnel-token");
         
-        if (config.getArgoEnabled() && config.getArgoHostname() != null && !config.getArgoHostname().isEmpty()) {
+        if (config.getArgoEnabled() && hasValidToken) {
             String argoLink = buildArgoLink();
             if (argoLink != null) {
                 links.put("argo", argoLink);
@@ -427,15 +427,16 @@ public class SingboxConfigBuilder {
     private String buildVlessWsLink(String serverIp) {
         String nodeName = generateNodeName("vless");
 
-        String add = useArgo() ? config.getArgoHostname() : serverIp;
-        int port = useArgo() ? 443 : config.getVlessPort();
+        String add = useArgo() ? config.getArgoCfIp() : serverIp;
+        int port = useArgo() ? config.getArgoCfPort() : config.getVlessPort();
+        String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
         String host = useArgo() ? config.getArgoHostname() : config.getDomain();
         String path = useArgo() ? "/vless-argo?ed=2560" : config.getVlessPath();
 
         String vlessLink;
         if (useArgo()) {
-            vlessLink = String.format("vless://%s@%s:%d?encryption=none&network=ws&host=%s&path=%s#%s",
-                    config.getVlessUuid(), add, port, host, path, nodeName);
+            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
+                    config.getVlessUuid(), add, port, sni, host, path, nodeName);
         } else {
             vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
                     config.getVlessUuid(), add, port, config.getDomain(), host, path, nodeName);
