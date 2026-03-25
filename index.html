@@ -215,6 +215,11 @@
       border-color: #476de2;
       color: #fff;
     }
+    .btn-secondary {
+      background: linear-gradient(180deg, #6c757d, #5a6268);
+      border-color: #5a6268;
+      color: #fff;
+    }
 
     .gist-row { display: none; }
     .gist-row.show { display: grid; }
@@ -399,6 +404,7 @@
         <textarea id="f-output" spellcheck="false" readonly></textarea>
         <div class="actions">
           <button class="btn btn-primary" id="f-copy">复制命令</button>
+          <button class="btn btn-secondary" id="f-copy-json">复制 JSON（GitHub Secrets）</button>
           <button class="btn" id="f-reset">重置</button>
         </div>
       </section>
@@ -686,6 +692,43 @@ $('f-gist-preview').style.display = 'none';
     try { await navigator.clipboard.writeText(t.value); showToast('已复制到剪贴板'); }
     catch(e) { document.execCommand('copy'); showToast('已复制'); }
   });
+
+  $('f-copy-json').addEventListener('click', async function() {
+    var json = {};
+    var uuid = $('f-uuid').value.trim();
+    if (uuid) json.UUID = uuid;
+    var name = $('f-name').value.trim();
+    if (name) json.NAME = name;
+    var argoDomain = $('f-argo-domain').value.trim();
+    if (argoDomain) json.ARGO_DOMAIN = argoDomain;
+    var argoToken = $('f-argo-token').value.trim();
+    if (argoToken) json.ARGO_AUTH = argoToken;
+    var argoIp = $('f-argo-ip').value.trim();
+    if (argoIp && argoIp !== 'www.visa.com.sg') json.CFIP = argoIp;
+    fbProtos.forEach(function(p) {
+      var cb = $(p.cb);
+      if (!cb.checked) return;
+      var pt = p.pt ? $(p.pt) : null;
+      var port = pt ? pt.value.trim() : '';
+      if (!port) return;
+      var key = p.cb.replace('fb-cb-', '');
+      if (key === 'hypt') json.HY2_PORT = port;
+      else if (key === 'vless') json.VLESS_PORT = port;
+      else if (key === 'vmess') json.VMESS_PORT = port;
+      else if (key === 's5') json.S5_PORT = port;
+      else if (key === 'naive') json.NAIVE_PORT = port;
+      else if (key === 'anpt') json.ANYTLS_PORT = port;
+      else if (key === 'tupt') json.TUIC_PORT = port;
+    });
+    var chatId = $('f-chat-id').value.trim();
+    if (chatId) json.CHAT_ID = chatId;
+    var botToken = $('f-bot-token').value.trim();
+    if (botToken) json.BOT_TOKEN = botToken;
+    var jsonStr = JSON.stringify(json, null, 2);
+    try { await navigator.clipboard.writeText(jsonStr); showToast('JSON 已复制到剪贴板'); }
+    catch(e) { showToast('复制失败'); }
+  });
+
   $('f-reset').addEventListener('click', function() { location.reload(); });
 
   renderPaper();
