@@ -149,11 +149,12 @@ public class SingboxConfigBuilder {
         inbound.add("users", users);
 
         JsonObject tls = new JsonObject();
-        tls.addProperty("enabled", true);
-        String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
-        tls.addProperty("server_name", sni);
-        tls.addProperty("certificate_path", "javacore.txt");
-        tls.addProperty("key_path", "heapdump.hprof");
+        tls.addProperty("enabled", !useArgo());
+        if (!useArgo()) {
+            tls.addProperty("server_name", config.getDomain());
+            tls.addProperty("certificate_path", "javacore.txt");
+            tls.addProperty("key_path", "heapdump.hprof");
+        }
         inbound.add("tls", tls);
 
         JsonObject transport = new JsonObject();
@@ -428,12 +429,17 @@ public class SingboxConfigBuilder {
 
         String add = useArgo() ? config.getArgoHostname() : serverIp;
         int port = useArgo() ? 443 : config.getVlessPort();
-        String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
         String host = useArgo() ? config.getArgoHostname() : config.getDomain();
         String path = useArgo() ? "/vless-argo?ed=2560" : config.getVlessPath();
 
-        String vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
-                config.getVlessUuid(), add, port, sni, host, path, nodeName);
+        String vlessLink;
+        if (useArgo()) {
+            vlessLink = String.format("vless://%s@%s:%d?encryption=none&network=ws&host=%s&path=%s#%s",
+                    config.getVlessUuid(), add, port, host, path, nodeName);
+        } else {
+            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
+                    config.getVlessUuid(), add, port, config.getDomain(), host, path, nodeName);
+        }
         return vlessLink;
     }
 
