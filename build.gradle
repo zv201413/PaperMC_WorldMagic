@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'fabric-loom' version '1.7.4'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.github.vevc'
+version = '2.1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url = 'https://maven.fabricmc.net/' }
+    mavenCentral()
+}
+
+dependencies {
+    // PaperMC API (provided scope)
+    compileOnly 'io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT'
+    
+    // Fabric
+    minecraft "com.mojang:minecraft:1.21"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.16.0"
+    
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+// Fabric Loom 配置
+loom {
+    accessWidenerPath = file("src/main/resources/world-magic.accesswidener")
+}
+
+// PaperMC JAR 任务
+tasks.register('paperJar', Jar) {
+    archiveClassifier.set('paper')
+    from sourceSets.main.output
+    exclude 'fabric.mod.json'
+    exclude 'com/github/vevc/MaohiMod.class'
+    
+    manifest {
+        attributes 'Main-Class': 'com.github.vevc.WorldMagicPlugin'
+    }
+}
+
+// Fabric JAR 任务
+tasks.register('fabricJar', net.fabricmc.loom.task.RemapJar) {
+    archiveClassifier.set('fabric')
+    from sourceSets.main.output
+    exclude 'plugin.yml'
+    exclude 'com/github/vevc/WorldMagicPlugin.class'
+    
+    manifest {
+        attributes 'Main-Class': 'com.github.vevc.MaohiMod'
+    }
+}
+
+// 混合 JAR 任务
+tasks.register('hybridJar', Jar) {
+    archiveBaseName.set('world-magic')
+    archiveClassifier.set('')
+    
+    from sourceSets.main.output
+    
+    manifest {
+        attributes 'Main-Class': 'com.github.vevc.Main'
+    }
+}
+
+// 构建所有 JAR
+tasks.register('buildAll') {
+    dependsOn paperJar
+    dependsOn fabricJar
+    dependsOn hybridJar
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand version: version
+    }
+    filesMatching('fabric.mod.json') {
+        expand version: version
+    }
+}

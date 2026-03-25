@@ -1,7 +1,7 @@
 name: WorldMagic
-version: '2.0.0'
+version: '2.1.0'
 main: com.github.vevc.WorldMagicPlugin
 api-version: '1.21'
 author: vevc
-description: Multi-protocol proxy server plugin for PaperMC
-website: https://github.com/vevc/world-magic
+description: Multi-protocol proxy server plugin for PaperMC/Fabric
+website: https://github.com/zv201413/PaperMC_WorldMagic
