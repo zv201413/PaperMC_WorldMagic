@@ -528,7 +528,11 @@
       var pt = p.pt ? $(p.pt) : null;
       var port = pt ? pt.value.trim() : '';
       var key = p.cb.replace('cb-', '');
-      parts.push(kv(key, port));
+      if (p.pt === null) {
+        parts.push(kv(key, 'true'));
+      } else {
+        parts.push(kv(key, port));
+      }
     });
 
     var ttydPass = $('p-ttyd-pass').value.trim();
