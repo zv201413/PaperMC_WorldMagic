@@ -394,14 +394,15 @@ public class SingboxConfigBuilder {
         String sni = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
         String host = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
         String path = hasArgoHostname() ? "/vless-argo" : config.getVlessPath();
+        String encodedPath = java.net.URLEncoder.encode(path, java.nio.charset.StandardCharsets.UTF_8);
 
         String vlessLink;
         if (hasArgoHostname()) {
-            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
-                config.getVlessUuid(), add, port, sni, host, path, nodeName);
+            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&type=ws&host=%s&path=%s&fp=chrome&alpn=h2#%s",
+                config.getVlessUuid(), add, port, sni, host, encodedPath, nodeName);
         } else {
-            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
-                config.getVlessUuid(), add, port, config.getDomain(), host, path, nodeName);
+            vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&type=ws&host=%s&path=%s&fp=chrome&alpn=h2#%s",
+                config.getVlessUuid(), add, port, config.getDomain(), host, encodedPath, nodeName);
         }
         return vlessLink;
     }
