@@ -28,9 +28,11 @@ public class SingboxConfigBuilder {
     }
 
     private boolean useArgo() {
-        return config.getArgoEnabled()
-            && config.getArgoHostname() != null
-            && !config.getArgoHostname().isEmpty();
+        return config.getArgoEnabled();
+    }
+
+    private boolean hasArgoHostname() {
+        return config.getArgoHostname() != null && !config.getArgoHostname().isEmpty();
     }
 
     public String build() {
@@ -345,12 +347,12 @@ public class SingboxConfigBuilder {
 
     private String buildVmessWsLink(String serverIp) {
         String nodeName = generateNodeName("vmess");
-        
-        String add = useArgo() ? config.getArgoHostname() : serverIp;
-        int port = useArgo() ? 443 : config.getVmessPort();
-        String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String host = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String path = useArgo() ? "/vmess-argo" : config.getVmessPath();
+
+        String add = hasArgoHostname() ? config.getArgoHostname() : serverIp;
+        int port = hasArgoHostname() ? 443 : config.getVmessPort();
+        String sni = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
+        String host = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
+        String path = hasArgoHostname() ? "/vmess-argo" : config.getVmessPath();
         
         JsonObject vmess = new JsonObject();
         vmess.addProperty("v", "2");
@@ -364,8 +366,8 @@ public class SingboxConfigBuilder {
         vmess.addProperty("type", "none");
         vmess.addProperty("host", host);
         vmess.addProperty("path", path);
-        vmess.addProperty("tls", useArgo() ? "tls" : "");
-        vmess.addProperty("sni", useArgo() ? sni : "");
+        vmess.addProperty("tls", hasArgoHostname() ? "tls" : "");
+        vmess.addProperty("sni", hasArgoHostname() ? sni : "");
         vmess.addProperty("alpn", "h2");
         vmess.addProperty("fp", "chrome");
         vmess.addProperty("allowInsecure", 1);
@@ -387,19 +389,19 @@ public class SingboxConfigBuilder {
     private String buildVlessWsLink(String serverIp) {
         String nodeName = generateNodeName("vless");
 
-        String add = useArgo() ? config.getArgoCfIp() : serverIp;
-        int port = useArgo() ? config.getArgoCfPort() : config.getVlessPort();
-        String sni = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String host = useArgo() ? config.getArgoHostname() : config.getDomain();
-        String path = useArgo() ? "/vless-argo" : config.getVlessPath();
+        String add = hasArgoHostname() ? config.getArgoCfIp() : serverIp;
+        int port = hasArgoHostname() ? config.getArgoCfPort() : config.getVlessPort();
+        String sni = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
+        String host = hasArgoHostname() ? config.getArgoHostname() : config.getDomain();
+        String path = hasArgoHostname() ? "/vless-argo" : config.getVlessPath();
 
         String vlessLink;
-        if (useArgo()) {
+        if (hasArgoHostname()) {
             vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
-                    config.getVlessUuid(), add, port, sni, host, path, nodeName);
+                config.getVlessUuid(), add, port, sni, host, path, nodeName);
         } else {
             vlessLink = String.format("vless://%s@%s:%d?encryption=none&security=tls&sni=%s&alpn=h2&fp=chrome&allowInsecure=1&network=ws&host=%s&path=%s#%s",
-                    config.getVlessUuid(), add, port, config.getDomain(), host, path, nodeName);
+                config.getVlessUuid(), add, port, config.getDomain(), host, path, nodeName);
         }
         return vlessLink;
     }
