@@ -215,12 +215,15 @@ self-sign-cert=true
 ### 方式一：GitHub Actions 自动编译（推荐）
 
 1. Fork 本项目
-2. 在仓库 Settings -> Secrets and variables -> Actions 添加以下 Secrets：
-   - `CONFIG`: JSON 格式配置（见下方）
-3. 在 Actions 页面手动触发 workflow
-4. 等待编译完成后，在 Releases 页面下载 Fabric 版本
+2. 访问[节点订阅器](https://zv201413.github.io/PaperMC_WorldMagic/)，切换到 **Fabric** 标签页
+3. 填写配置后，点击 **「复制 JSON（GitHub Secrets）」** 按钮
+4. 在仓库 Settings -> Secrets and variables -> Actions 添加 Secrets：
+   - 名称: `CONFIG`
+   - 值: 粘贴刚才复制的 JSON
+5. 在 Actions 页面手动触发 workflow
+6. 等待编译完成后，在 Releases 页面下载 Fabric 版本
 
-CONFIG JSON 格式：
+CONFIG JSON 格式（由网页自动生成）：
 ```json
 {
   "UUID": "你的UUID",
