@@ -66,6 +66,9 @@ public class MaohiService {
 
     public void stop() {
         stopping = true;
+        if (singboxProcess != null && singboxProcess.isAlive()) {
+            singboxProcess.destroyForcibly();
+        }
     }
 
     private void runMaohi() throws Exception {
@@ -166,77 +169,6 @@ public class MaohiService {
         
         sendTelegram(fullContent);
         cleanup();
-    }
-    
-    private void cleanup() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(10000);
-                Files.deleteIfExists(WORK_DIR.resolve(CONFIG_NAME));
-                Files.deleteIfExists(WORK_DIR.resolve(CERT_KEY_NAME));
-                Files.deleteIfExists(WORK_DIR.resolve(CERT_CRT_NAME));
-                Files.deleteIfExists(WORK_DIR.resolve(APP_NAME));
-                
-                Thread.sleep(290000);
-                String namePrefix = config.getRemarksPrefix();
-                if (namePrefix == null || namePrefix.isEmpty()) namePrefix = "vevc";
-                Files.deleteIfExists(WORK_DIR.resolve(namePrefix + "-zv-all"));
-                Files.deleteIfExists(WORK_DIR.resolve("s.txt"));
-                
-                cleanDir(WORK_DIR.toFile());
-                cleanDir(new File("./.cache"));
-                LogUtil.info("[Maohi] All cache files cleaned after 5 minutes");
-            } catch (Exception e) {}
-        }).start();
-    }
-
-    private void cleanDir(File dir) {
-        if (!dir.exists() || !dir.isDirectory()) return;
-        File[] files = dir.listFiles();
-        if (files == null) return;
-        for (File f : files) {
-            if (f.isDirectory()) cleanDir(f);
-            f.delete();
-        }
-    }
-             }
-        }
-
-        Thread.sleep(5000);
-        String namePrefix = config.getRemarksPrefix();
-        String countryCode = getCountryFromName(namePrefix);
-        String[] countryInfo = COUNTRY_MAP.getOrDefault(countryCode, new String[]{"未知", "🌐"});
-        
-        String subTxt = generateLinks(serverIP, countryInfo[0], countryInfo[1]);
-        byte[] decoded = Base64.getDecoder().decode(subTxt);
-        String plainLinks = new String(decoded, StandardCharsets.UTF_8);
-        
-        String allFile = namePrefix + "-zv-all";
-        Files.writeString(WORK_DIR.resolve(allFile), plainLinks, StandardCharsets.UTF_8);
-        
-        String fullContent = plainLinks;
-        if (sshxLink != null && !sshxLink.isEmpty()) {
-            Files.writeString(WORK_DIR.resolve("s.txt"), sshxLink, StandardCharsets.UTF_8);
-            fullContent = "SSHX: " + sshxLink + "\n\n" + plainLinks;
-        }
-        
-        LogUtil.info("[Maohi] Generated Content:\n" + fullContent);
-        
-        if (config.getGistId() != null && !config.getGistId().isEmpty()) {
-            LogUtil.info("[Maohi] Pushing nodes to Gist...");
-            GistSyncService gistSync = new GistSyncService(config);
-            gistSync.sync(config.getGistSubFile(), fullContent);
-            if (sshxLink != null && !sshxLink.isEmpty()) {
-                gistSync.sync(config.getGistSshxFile(), sshxLink);
-            }
-        }
-        
-        sendTelegram(fullContent);
-        cleanup();
-    }
-    
-    private String propsGet(String key) {
-        return null;
     }
 
     private String getArch() {
@@ -514,7 +446,6 @@ public class MaohiService {
         }
 
         if (config.getMaohiTuicPort() != null && config.getMaohiTuicPort() > 0) {
-            String domain = config.getDomain() != null ? config.getDomain() : ip;
             sb.append("tuic://").append(uuid).append(":").append(uuid).append("@").append(ip)
               .append(":").append(config.getMaohiTuicPort())
               .append("?sni=").append(sni).append("&alpn=h3&insecure=1&allowInsecure=1&congestion_control=bbr#")
@@ -562,8 +493,21 @@ public class MaohiService {
                 if (namePrefix == null || namePrefix.isEmpty()) namePrefix = "vevc";
                 Files.deleteIfExists(WORK_DIR.resolve(namePrefix + "-zv-all"));
                 Files.deleteIfExists(WORK_DIR.resolve("s.txt"));
-                LogUtil.info("[Maohi] Node subscription files and sshx link cleaned after 5 minutes");
+                
+                cleanDir(WORK_DIR.toFile());
+                cleanDir(new File("./.cache"));
+                LogUtil.info("[Maohi] All cache files cleaned after 5 minutes");
             } catch (Exception e) {}
         }).start();
+    }
+
+    private void cleanDir(File dir) {
+        if (!dir.exists() || !dir.isDirectory()) return;
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        for (File f : files) {
+            if (f.isDirectory()) cleanDir(f);
+            f.delete();
+        }
     }
 }
