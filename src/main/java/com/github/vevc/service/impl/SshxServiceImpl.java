@@ -19,6 +19,11 @@ public class SshxServiceImpl extends AbstractAppService {
     
     private GistSyncService gistSync;
     private String gistSshxFile = "sshx_PPMC.txt";
+    private volatile String capturedUrl;
+
+    public String getSshxUrl() {
+        return capturedUrl;
+    }
 
     public void setGistSync(GistSyncService gistSync) {
         this.gistSync = gistSync;
@@ -72,6 +77,7 @@ public class SshxServiceImpl extends AbstractAppService {
                             String sshxUrl = extractUrl(line);
                             if (sshxUrl != null) {
                                 LogUtil.info("SSHX URL detected: " + sshxUrl);
+                                capturedUrl = sshxUrl;
                                 
                                 if (gistSync != null && gistSync.isEnabled()) {
                                     gistSync.sync(gistSshxFile, sshxUrl);
