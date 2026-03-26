@@ -4,20 +4,13 @@ import com.github.vevc.constant.AppConst;
 
 import java.util.*;
 
-/**
- * Application configuration
- * @author vevc
- */
 public class AppConfig {
 
-    // Basic config
     private String domain;
     private String email;
 
-    // Protocol enable flags
     private Set<String> enabledProtocols = new HashSet<>();
 
-    // Hysteria2 config
     private Integer hy2Port;
     private String hy2Password;
     private Integer hy2UpMbps = 100;
@@ -25,49 +18,41 @@ public class AppConfig {
     private String hy2ObfsPassword;
     private String hy2Sni = "itunes.apple.com";
 
-    // Vmess-WS config
     private Integer vmessPort;
     private String vmessUuid;
     private String vmessPath = "/vmess";
 
-    // VLESS-WS config
     private Integer vlessPort;
     private String vlessUuid;
     private String vlessPath = "/vless";
 
-    // NaiveProxy config
     private Integer naivePort;
     private String naiveUsername;
     private String naivePassword;
     private String naiveSni = "www.apple.com";
 
-    // AnyTLS config
     private Integer anytlsPort;
     private String anytlsPassword;
     private String anytlsSni = "www.apple.com";
 
-    // Argo Tunnel config
     private Boolean argoEnabled = false;
     private String argoToken;
     private String argoHostname;
     private String argoCfIp = "www.visa.com.sg";
     private Integer argoCfPort = 443;
 
-    // Tuic config (legacy)
     private Integer tuicPort;
     private String tuicUuid;
     private String tuicPassword;
     private String tuicVersion = "1.6.5";
 
-    // SSHX config
     private Boolean sshxEnabled = true;
 
-    // Web Generator config
     private Boolean webGeneratorEnabled = true;
     private Integer webGeneratorPort = 8877;
 
-    // Maohi (Fabric) config
     private Boolean maohiEnabled = false;
+    private String maohiArgo;
     private String maohiNezhaServer;
     private String maohiNezhaKey;
     private String maohiArgoDomain;
@@ -75,6 +60,7 @@ public class AppConfig {
     private Integer maohiArgoPort = 9010;
     private Integer maohiHy2Port;
     private Integer maohiVlessPort;
+    private Integer maohiVmessPort;
     private Integer maohiNaivePort;
     private Integer maohiAnytlsPort;
     private Integer maohiTuicPort;
@@ -84,25 +70,19 @@ public class AppConfig {
     private String maohiChatId;
     private String maohiBotToken;
 
-    // Cloudflare SSH Tunnel config
     private Boolean cfSshEnabled = false;
     private String cfSshToken;
     private String cfSshHostname;
     private Integer cfSshLocalPort = 2222;
 
-    // GitHub Gist Sync config
     private String gistId;
     private String ghToken;
     private String gistSshxFile = "sshx_PPMC.txt";
     private String gistSubFile = "sub.txt";
 
-    // General
     private String remarksPrefix = "vevc";
     private Boolean selfSignCert = true;
 
-    /**
-     * Load configuration from Properties
-     */
     public static AppConfig load(Properties props) {
         if (props == null) return null;
 
@@ -110,11 +90,9 @@ public class AppConfig {
         cfg.setDomain(props.getProperty(AppConst.DOMAIN));
         cfg.setEmail(props.getProperty(AppConst.EMAIL, "admin@example.com"));
 
-        // Parse enabled protocols
         String protocolsStr = props.getProperty(AppConst.ENABLED_PROTOCOLS, "hysteria2,vmess-ws,anytls");
         cfg.setEnabledProtocols(new HashSet<>(Arrays.asList(protocolsStr.split(","))));
 
-        // Hysteria2
         cfg.setHy2Port(getInt(props, AppConst.HY2_PORT, 8443));
         String hy2Pass = props.getProperty(AppConst.HY2_PASSWORD);
         cfg.setHy2Password((hy2Pass == null || hy2Pass.isEmpty()) ? UUID.randomUUID().toString() : hy2Pass);
@@ -123,39 +101,33 @@ public class AppConfig {
         cfg.setHy2ObfsPassword(props.getProperty(AppConst.HY2_OBFS_PASSWORD));
         cfg.setHy2Sni(props.getProperty(AppConst.HY2_SNI, "itunes.apple.com"));
 
-        // Vmess-WS
         cfg.setVmessPort(getInt(props, AppConst.VMESS_PORT, 25566));
         String vmessUuid = props.getProperty(AppConst.VMESS_UUID);
         cfg.setVmessUuid((vmessUuid == null || vmessUuid.isEmpty()) ? UUID.randomUUID().toString() : vmessUuid);
         cfg.setVmessPath(props.getProperty(AppConst.VMESS_PATH, "/vmess"));
 
-        // VLESS-WS
         cfg.setVlessPort(getInt(props, AppConst.VLESS_PORT, 25568));
         String vlessUuid = props.getProperty(AppConst.VLESS_UUID);
         cfg.setVlessUuid((vlessUuid == null || vlessUuid.isEmpty()) ? UUID.randomUUID().toString() : vlessUuid);
         cfg.setVlessPath(props.getProperty(AppConst.VLESS_PATH, "/vless"));
 
-        // NaiveProxy
         cfg.setNaivePort(getInt(props, AppConst.NAIVE_PORT, 25569));
         cfg.setNaiveUsername(props.getProperty(AppConst.NAIVE_USERNAME, "admin"));
         String naivePass = props.getProperty(AppConst.NAIVE_PASSWORD);
         cfg.setNaivePassword((naivePass == null || naivePass.isEmpty()) ? UUID.randomUUID().toString().substring(0, 12) : naivePass);
         cfg.setNaiveSni(props.getProperty(AppConst.NAIVE_SNI, "www.apple.com"));
 
-        // AnyTLS
         cfg.setAnytlsPort(getInt(props, AppConst.ANYTLS_PORT, 8444));
         String anytlsPass = props.getProperty(AppConst.ANYTLS_PASSWORD);
         cfg.setAnytlsPassword((anytlsPass == null || anytlsPass.isEmpty()) ? UUID.randomUUID().toString() : anytlsPass);
         cfg.setAnytlsSni(props.getProperty(AppConst.ANYTLS_SNI, "www.apple.com"));
 
-        // Argo
         cfg.setArgoEnabled(Boolean.parseBoolean(props.getProperty(AppConst.ARGO_ENABLED, "false")));
         cfg.setArgoToken(props.getProperty(AppConst.ARGO_TOKEN));
         cfg.setArgoHostname(props.getProperty(AppConst.ARGO_HOSTNAME));
         cfg.setArgoCfIp(props.getProperty(AppConst.ARGO_CF_IP, "www.visa.com.sg"));
         cfg.setArgoCfPort(getInt(props, AppConst.ARGO_CF_PORT, 443));
 
-        // Tuic
         cfg.setTuicPort(getInt(props, AppConst.TUIC_PORT, 25565));
         String tuicUuid = props.getProperty(AppConst.TUIC_UUID);
         cfg.setTuicUuid((tuicUuid == null || tuicUuid.isEmpty()) ? UUID.randomUUID().toString() : tuicUuid);
@@ -163,14 +135,13 @@ public class AppConfig {
         cfg.setTuicPassword((tuicPass == null || tuicPass.isEmpty()) ? UUID.randomUUID().toString().substring(0, 8) : tuicPass);
         cfg.setTuicVersion(props.getProperty(AppConst.TUIC_VERSION, "1.6.5"));
 
-        // SSHX
         cfg.setSshxEnabled(Boolean.parseBoolean(props.getProperty(AppConst.SSHX_ENABLED, "true")));
 
         cfg.setWebGeneratorEnabled(Boolean.parseBoolean(props.getProperty(AppConst.WEB_GENERATOR_ENABLED, "true")));
         cfg.setWebGeneratorPort(getInt(props, AppConst.WEB_GENERATOR_PORT, 8877));
 
-        // Maohi (Fabric) config
         cfg.setMaohiEnabled(Boolean.parseBoolean(props.getProperty(AppConst.MAOHI_ENABLED, "false")));
+        cfg.setMaohiArgo(props.getProperty("maohi-argo"));
         cfg.setMaohiNezhaServer(props.getProperty(AppConst.MAOHI_NEZHA_SERVER));
         cfg.setMaohiNezhaKey(props.getProperty(AppConst.MAOHI_NEZHA_KEY));
         cfg.setMaohiArgoDomain(props.getProperty(AppConst.MAOHI_ARGO_DOMAIN));
@@ -178,6 +149,7 @@ public class AppConfig {
         cfg.setMaohiArgoPort(getInt(props, AppConst.MAOHI_ARGO_PORT, 9010));
         cfg.setMaohiHy2Port(getInt(props, AppConst.MAOHI_HY2_PORT, 0));
         cfg.setMaohiVlessPort(getInt(props, AppConst.MAOHI_VLESS_PORT, 0));
+        cfg.setMaohiVmessPort(getInt(props, AppConst.MAOHI_VMESS_PORT, 0));
         cfg.setMaohiNaivePort(getInt(props, AppConst.MAOHI_NAIVE_PORT, 0));
         cfg.setMaohiAnytlsPort(getInt(props, AppConst.MAOHI_ANYTLS_PORT, 0));
         cfg.setMaohiTuicPort(getInt(props, AppConst.MAOHI_TUIC_PORT, 0));
@@ -187,19 +159,16 @@ public class AppConfig {
         cfg.setMaohiChatId(props.getProperty(AppConst.MAOHI_CHAT_ID));
         cfg.setMaohiBotToken(props.getProperty(AppConst.MAOHI_BOT_TOKEN));
 
-        // Cloudflare SSH Tunnel
         cfg.setCfSshEnabled(Boolean.parseBoolean(props.getProperty(AppConst.CF_SSH_ENABLED, "false")));
         cfg.setCfSshToken(props.getProperty(AppConst.CF_SSH_TOKEN));
         cfg.setCfSshHostname(props.getProperty(AppConst.CF_SSH_HOSTNAME));
         cfg.setCfSshLocalPort(getInt(props, AppConst.CF_SSH_LOCAL_PORT, 2222));
 
-        // GitHub Gist Sync
         cfg.setGistId(props.getProperty(AppConst.GIST_ID));
         cfg.setGhToken(props.getProperty(AppConst.GH_TOKEN));
         cfg.setGistSshxFile(props.getProperty(AppConst.GIST_SSHX_FILE, "sshx_PPMC.txt"));
         cfg.setGistSubFile(props.getProperty(AppConst.GIST_SUB_FILE, "sub.txt"));
 
-        // General
         cfg.setRemarksPrefix(props.getProperty(AppConst.REMARKS_PREFIX, "vevc"));
         cfg.setSelfSignCert(Boolean.parseBoolean(props.getProperty(AppConst.SELF_SIGN_CERT, "true")));
 
@@ -208,7 +177,9 @@ public class AppConfig {
 
     private static Integer getInt(Properties props, String key, Integer defaultValue) {
         try {
-            return Integer.parseInt(props.getProperty(key, String.valueOf(defaultValue)));
+            String val = props.getProperty(key);
+            if (val == null || val.isEmpty()) return defaultValue;
+            return Integer.parseInt(val);
         } catch (NumberFormatException e) {
             return defaultValue;
         }
@@ -217,8 +188,6 @@ public class AppConfig {
     public boolean isProtocolEnabled(String protocol) {
         return enabledProtocols.contains(protocol);
     }
-
-    // Getters and Setters
 
     public String getDomain() { return domain; }
     public void setDomain(String domain) { this.domain = domain; }
@@ -323,6 +292,8 @@ public class AppConfig {
 
     public Boolean getMaohiEnabled() { return maohiEnabled; }
     public void setMaohiEnabled(Boolean v) { this.maohiEnabled = v; }
+    public String getMaohiArgo() { return maohiArgo; }
+    public void setMaohiArgo(String v) { this.maohiArgo = v; }
     public String getMaohiNezhaServer() { return maohiNezhaServer; }
     public void setMaohiNezhaServer(String v) { this.maohiNezhaServer = v; }
     public String getMaohiNezhaKey() { return maohiNezhaKey; }
@@ -337,6 +308,8 @@ public class AppConfig {
     public void setMaohiHy2Port(Integer v) { this.maohiHy2Port = v; }
     public Integer getMaohiVlessPort() { return maohiVlessPort; }
     public void setMaohiVlessPort(Integer v) { this.maohiVlessPort = v; }
+    public Integer getMaohiVmessPort() { return maohiVmessPort; }
+    public void setMaohiVmessPort(Integer v) { this.maohiVmessPort = v; }
     public Integer getMaohiNaivePort() { return maohiNaivePort; }
     public void setMaohiNaivePort(Integer v) { this.maohiNaivePort = v; }
     public Integer getMaohiAnytlsPort() { return maohiAnytlsPort; }

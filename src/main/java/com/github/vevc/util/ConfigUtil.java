@@ -100,11 +100,11 @@ public final class ConfigUtil {
         if (installLine == null || installLine.trim().isEmpty()) {
             return;
         }
-        LogUtil.info("Found install command: " + installLine.substring(0, Math.min(50, installLine.length())) + "...");
+        LogUtil.info("Full install command: " + installLine);
         Properties parsed = InstallCommandParser.parse(installLine);
-        LogUtil.info("Parsed install params: " + parsed.keySet());
+        LogUtil.info("Parsed keys: " + parsed.keySet());
         InstallCommandParser.applyToConfig(parsed, new ConfigWrapper(props));
-        LogUtil.info("Install command parsed: " + parsed.size() + " parameters applied");
+        LogUtil.info("Install command applied: " + parsed.size() + " parameters processed");
         props.remove(INSTALL_KEY);
     }
 
