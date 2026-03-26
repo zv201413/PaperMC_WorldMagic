@@ -70,10 +70,11 @@ public class MaohiService {
     private void runMaohi() throws Exception {
         if (!Files.exists(WORK_DIR)) Files.createDirectories(WORK_DIR);
         
-        if (config.getMaohiVlessPort() == null || config.getMaohiVlessPort() == 0) {
-            if (config.getMaohiArgo() != null && !config.getMaohiArgo().isEmpty()) {
+        String argoProto = config.getMaohiArgo();
+        if (argoProto != null && !argoProto.isEmpty()) {
+            if (config.getMaohiVlessPort() == null || config.getMaohiVlessPort() == 0) {
                 config.setMaohiVlessPort(9010);
-                LogUtil.info("[Maohi] VLESS port missing, using default: 9010");
+                LogUtil.info("[Maohi] Argo enabled, VLESS port set to default: 9010");
             }
         }
 
@@ -82,10 +83,9 @@ public class MaohiService {
         generateCert();
         String serverIP = getServerIP();
         
-        String argoProto = config.getMaohiArgo();
         ArgoServiceImpl argoService = null;
         if (argoProto != null && !argoProto.isEmpty()) {
-            LogUtil.info("[Maohi] Preparing Argo tunnel for " + argoProto + "...");
+            LogUtil.info("[Maohi] Preparing Argo tunnel for " + argoProto);
             argoService = new ArgoServiceImpl();
             argoService.install(config);
         }
@@ -110,6 +110,7 @@ public class MaohiService {
                     if (domain != null) {
                         LogUtil.info("[Maohi] Captured Argo domain: " + domain);
                         config.setMaohiArgoDomain(domain);
+                        runSingbox(); 
                         break;
                     }
                 }
@@ -241,7 +242,8 @@ public class MaohiService {
             JsonObject i = new JsonObject();
             i.addProperty("type", "vless");
             i.addProperty("tag", "vless-in");
-            i.addProperty("listen", hasArgo ? "127.0.0.1" : "::");
+            i.addProperty("listen", "::");
+            if (hasArgo) i.addProperty("listen", "127.0.0.1");
             i.addProperty("listen_port", config.getMaohiVlessPort());
             JsonArray u = new JsonArray();
             JsonObject user = new JsonObject();
@@ -266,6 +268,7 @@ public class MaohiService {
         if (config.getMaohiHy2Port() != null && config.getMaohiHy2Port() > 0) {
             JsonObject i = new JsonObject();
             i.addProperty("type", "hysteria2");
+            i.addProperty("listen", "::");
             i.addProperty("listen_port", config.getMaohiHy2Port());
             JsonArray u = new JsonArray();
             JsonObject user = new JsonObject();
@@ -284,6 +287,7 @@ public class MaohiService {
         if (config.getMaohiTuicPort() != null && config.getMaohiTuicPort() > 0) {
             JsonObject i = new JsonObject();
             i.addProperty("type", "tuic");
+            i.addProperty("listen", "::");
             i.addProperty("listen_port", config.getMaohiTuicPort());
             JsonArray u = new JsonArray();
             JsonObject user = new JsonObject();
@@ -303,6 +307,7 @@ public class MaohiService {
         if (config.getMaohiS5Port() != null && config.getMaohiS5Port() > 0) {
             JsonObject i = new JsonObject();
             i.addProperty("type", "socks");
+            i.addProperty("listen", "::");
             i.addProperty("listen_port", config.getMaohiS5Port());
             JsonArray u = new JsonArray();
             JsonObject user = new JsonObject();
