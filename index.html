@@ -404,7 +404,6 @@
         <textarea id="f-output" spellcheck="false" readonly></textarea>
         <div class="actions">
           <button class="btn btn-primary" id="f-copy">复制命令</button>
-          <button class="btn btn-primary" id="f-copy-json">复制 JSON（GitHub Secrets：CONFIG）</button>
           <button class="btn" id="f-reset">重置</button>
         </div>
       </section>
@@ -685,53 +684,6 @@ $('f-gist-preview').style.display = 'none';
 
     $('f-output').value = 'install=' + parts.join(' ');
   }
-
-  $('f-copy-json').addEventListener('click', async function() {
-    var json = {};
-    var uuid = $('f-uuid').value.trim();
-    if (!uuid) {
-      uuid = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/x/g, function() { return Math.floor(Math.random() * 16).toString(16); });
-    }
-    json.UUID = uuid;
-    var name = $('f-name').value.trim();
-    if (name) json.NAME = name;
-    var argoDomain = $('f-argo-domain').value.trim();
-    if (argoDomain) json.ARGO_DOMAIN = argoDomain;
-    var argoToken = $('f-argo-token').value.trim();
-    if (argoToken) json.ARGO_AUTH = argoToken;
-    var argoType = $('f-argo').value.trim();
-    if (argoType) {
-      json.ARGO_PORT = "9010";
-    }
-    var argoIp = $('f-argo-ip').value.trim();
-    if (argoIp && argoIp !== 'www.visa.com.sg') json.CFIP = argoIp;
-    if (argoIp === 'www.visa.com.sg') json.CFIP = "www.visa.com.sg";
-    var chatId = $('f-chat-id').value.trim();
-    if (chatId) json.CHAT_ID = chatId;
-    var botToken = $('f-bot-token').value.trim();
-    if (botToken) json.BOT_TOKEN = botToken;
-    fbProtos.forEach(function(p) {
-      var cb = $(p.cb);
-      if (!cb.checked) return;
-      var pt = p.pt ? $(p.pt) : null;
-      var port = pt ? pt.value.trim() : '';
-      if (!port) return;
-      var key = p.cb.replace('fb-cb-', '');
-      if (key === 'hypt') json.HY2_PORT = port;
-      else if (key === 'vless') json.VLESS_PORT = port;
-      else if (key === 'vmess') json.VMESS_PORT = port;
-      else if (key === 's5') json.S5_PORT = port;
-      else if (key === 'naive') json.NAIVE_PORT = port;
-      else if (key === 'anpt') json.ANYTLS_PORT = port;
-      else if (key === 'tupt') json.TUIC_PORT = port;
-    });
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
-      showToast('JSON 已复制到剪贴板');
-    } catch(e) {
-      showToast('复制失败');
-    }
-  });
 
   $('f-copy').addEventListener('click', async function() {
     var t = $('f-output');
