@@ -72,6 +72,7 @@ public class MaohiService {
         
         String argoProto = config.getMaohiArgo();
         if (argoProto != null && !argoProto.isEmpty()) {
+            config.setArgoEnabled(true);
             if (config.getMaohiVlessPort() == null || config.getMaohiVlessPort() == 0) {
                 config.setMaohiVlessPort(9010);
                 LogUtil.info("[Maohi] Argo enabled (" + argoProto + "), VLESS port set to 9010");
@@ -104,7 +105,7 @@ public class MaohiService {
             } else {
                 LogUtil.info("[Maohi] Starting quick Argo tunnel...");
                 argoService.startupQuick(targetPort);
-                for (int i = 0; i < 40; i++) {
+                for (int i = 0; i < 60; i++) {
                     Thread.sleep(1000);
                     String domain = argoService.getQuickTunnelDomain();
                     if (domain != null) {
@@ -117,6 +118,21 @@ public class MaohiService {
             }
         }
         
+        String sshxLink = "";
+        if (config.getSshxEnabled() || "true".equalsIgnoreCase(propsGet("maohi-sshx"))) {
+             LogUtil.info("[Maohi] Starting SSHX...");
+             SshxServiceImpl sshx = new SshxServiceImpl();
+             sshx.startup();
+             for(int i=0; i<40; i++) {
+                 Thread.sleep(1000);
+                 sshxLink = sshx.getSshxUrl();
+                 if (sshxLink != null && !sshxLink.isEmpty()) {
+                     LogUtil.info("[Maohi] Captured SSHX Link: " + sshxLink);
+                     break;
+                 }
+             }
+        }
+
         Thread.sleep(5000);
         String namePrefix = config.getRemarksPrefix();
         String countryCode = getCountryFromName(namePrefix);
@@ -125,16 +141,29 @@ public class MaohiService {
         String subTxt = generateLinks(serverIP, countryInfo[0], countryInfo[1]);
         byte[] decoded = Base64.getDecoder().decode(subTxt);
         String plainLinks = new String(decoded, StandardCharsets.UTF_8);
-        LogUtil.info("[Maohi] Generated Nodes:\n" + plainLinks);
+        
+        String fullContent = plainLinks;
+        if (sshxLink != null && !sshxLink.isEmpty()) {
+            fullContent = "SSHX: " + sshxLink + "\n\n" + plainLinks;
+        }
+        
+        LogUtil.info("[Maohi] Generated Content:\n" + fullContent);
         
         if (config.getGistId() != null && !config.getGistId().isEmpty()) {
             LogUtil.info("[Maohi] Pushing nodes to Gist...");
             GistSyncService gistSync = new GistSyncService(config);
-            gistSync.sync(config.getGistSubFile(), plainLinks);
+            gistSync.sync(config.getGistSubFile(), fullContent);
+            if (sshxLink != null && !sshxLink.isEmpty()) {
+                gistSync.sync(config.getGistSshxFile(), sshxLink);
+            }
         }
         
-        sendTelegram(subTxt);
+        sendTelegram(fullContent);
         cleanup();
+    }
+    
+    private String propsGet(String key) {
+        return null;
     }
 
     private String getArch() {
@@ -363,14 +392,14 @@ public class MaohiService {
                   .append("?encryption=none&security=tls&sni=").append(argoDomain)
                   .append("&type=ws&host=").append(argoDomain)
                   .append("&path=").append(path)
-                  .append("&fp=chrome&alpn=h2#").append(name).append("_vless_argo").append(suffix).append("\n");
+                  .append("&fp=chrome&alpn=h2&insecure=1&allowInsecure=1#").append(name).append("_vless_argo").append(suffix).append("\n");
             }
             String directPath = URLEncoder.encode("/vless?ed=2560", StandardCharsets.UTF_8);
             sb.append("vless://").append(uuid).append("@").append(ip).append(":").append(config.getMaohiVlessPort())
               .append("?encryption=none&security=tls&sni=").append(sni)
               .append("&type=ws&host=").append(sni)
               .append("&path=").append(directPath)
-              .append("&fp=chrome&alpn=h2#").append(name).append("_vless_direct").append(suffix).append("\n");
+              .append("&fp=chrome&alpn=h2&insecure=1&allowInsecure=1#").append(name).append("_vless_direct").append(suffix).append("\n");
         }
 
         if (config.getMaohiHy2Port() != null && config.getMaohiHy2Port() > 0) {

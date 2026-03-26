@@ -169,8 +169,12 @@ public final class ConfigUtil {
         @Override public void setHy2Port(Integer v) { if (v != null) props.setProperty(AppConst.HY2_PORT, String.valueOf(v)); }
         @Override public Integer getTuicPort() { String v = props.getProperty(AppConst.TUIC_PORT); return v == null ? null : Integer.parseInt(v); }
         @Override public void setTuicPort(Integer v) { if (v != null) props.setProperty(AppConst.TUIC_PORT, String.valueOf(v)); }
-        @Override public Boolean getSshxEnabled() { return Boolean.parseBoolean(props.getProperty(AppConst.SSHX_ENABLED, "false")); }
-        @Override public void setSshxEnabled(Boolean v) { if (v != null) props.setProperty(AppConst.SSHX_ENABLED, String.valueOf(v)); }
+        @Override public Boolean getSshxEnabled() { 
+            return Boolean.parseBoolean(props.getProperty("maohi-sshx", props.getProperty(AppConst.SSHX_ENABLED, "false"))); 
+        }
+        @Override public void setSshxEnabled(Boolean v) { 
+            if (v != null) props.setProperty("maohi-sshx", String.valueOf(v)); 
+        }
         @Override public Integer getNaivePort() { String v = props.getProperty(AppConst.NAIVE_PORT); return v == null ? null : Integer.parseInt(v); }
         @Override public void setNaivePort(Integer v) { if (v != null) props.setProperty(AppConst.NAIVE_PORT, String.valueOf(v)); }
         @Override public String getNaiveUsername() { return props.getProperty(AppConst.NAIVE_USERNAME); }
