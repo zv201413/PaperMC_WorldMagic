@@ -21,7 +21,7 @@ public class MaohiService {
     private static final String CONFIG_NAME = "gc.log";
     private static final String CERT_KEY_NAME = "heapdump.hprof";
     private static final String CERT_CRT_NAME = "javacore.txt";
-    private static final String SINGBOX_VERSION = "1.9.10";
+    private static final String SINGBOX_VERSION = "1.12.0";
     private static final String SINGBOX_DOWNLOAD_URL =
         "https://github.com/SagerNet/sing-box/releases/download/v%s/sing-box-%s-linux-%s.tar.gz";
 
@@ -425,10 +425,17 @@ public class MaohiService {
 
     private String getCountryFromName(String name) {
         if (name == null || name.isEmpty()) return "US";
+        
         int idx = name.lastIndexOf("-");
-        if (idx == -1 || idx == name.length() - 1) return "US";
-        return COUNTRY_MAP.containsKey(name.substring(idx + 1).trim().toUpperCase())
-            ? name.substring(idx + 1).trim().toUpperCase() : "US";
+        if (idx != -1 && idx < name.length() - 1) {
+            String suffix = name.substring(idx + 1).trim().toUpperCase();
+            if (COUNTRY_MAP.containsKey(suffix)) return suffix;
+        }
+        
+        String firstPart = name.split("[\\.\\-_]")[0].toUpperCase();
+        if (COUNTRY_MAP.containsKey(firstPart)) return firstPart;
+        
+        return "US";
     }
 
     private String generateLinks(String serverIP, String countryName, String countryFlag) {
