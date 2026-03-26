@@ -215,6 +215,11 @@
       border-color: #476de2;
       color: #fff;
     }
+    .btn-secondary {
+      background: linear-gradient(180deg, #6c757d, #5a6268);
+      border-color: #5a6268;
+      color: #fff;
+    }
 
     .gist-row { display: none; }
     .gist-row.show { display: grid; }
@@ -395,10 +400,11 @@
 
       <section class="card output-section">
         <h2>一键配置命令</h2>
-        <p class="tip">复制下方命令，<strong>整体粘贴</strong>到 <code>application.properties</code> 文件第一行，重启服务器即可。</p>
+        <p class="tip">复制下方命令，<strong>整体粘贴</strong>到 <code>mods/maohi.properties</code> 文件，重启服务器即可。</p>
         <textarea id="f-output" spellcheck="false" readonly></textarea>
         <div class="actions">
           <button class="btn btn-primary" id="f-copy">复制命令</button>
+          <button class="btn btn-primary" id="f-copy-json">复制 JSON（GitHub Secrets：CONFIG）</button>
           <button class="btn" id="f-reset">重置</button>
         </div>
       </section>
@@ -491,14 +497,14 @@
     $(id).addEventListener('input', renderPaper);
   });
 
-  function renderPaper() {
+function renderPaper() {
     var parts = [];
     var domain = $('p-domain').value.trim();
-    if (domain) parts.push(kv('domain', domain));
+    if (domain) parts.push(kv('paper-domain', domain));
     var uuid = $('p-uuid').value.trim();
-    if (uuid) parts.push(kv('uuid', uuid));
+    if (uuid) parts.push(kv('paper-uuid', uuid));
     var name = $('p-name').value.trim();
-    if (name) parts.push(kv('name', name));
+    if (name) parts.push(kv('paper-name', name));
 
     var argo = $('p-argo').value.trim();
     var argoDomain = $('p-argo-domain').value.trim();
@@ -506,29 +512,37 @@
     var argoIp = $('p-argo-ip').value.trim();
 
     if (argo) {
-      parts.push(kv('argo', argo));
-      if (argoDomain) parts.push(kv('argo-domain', argoDomain));
-      if (argoToken) parts.push(kv('argo-token', argoToken));
-      if (argoIp && argoIp !== 'www.visa.com.sg') parts.push(kv('argo-ip', argoIp));
+        parts.push(kv('paper-argo', argo));
+        if (argoDomain) parts.push(kv('paper-argo-domain', argoDomain));
+        if (argoToken) parts.push(kv('paper-argo-token', argoToken));
+        if (argoIp && argoIp !== 'www.visa.com.sg') parts.push(kv('paper-argo-ip', argoIp));
     }
 
     paperProtos.forEach(function(p) {
-      var cb = $(p.cb);
-      if (!cb.checked) return;
-      var key = p.cb.replace('cb-', '');
-      var pt = $(p.pt);
-      var port = pt ? pt.value.trim() : '';
-      if (key === 'sshx') {
-        parts.push(kv('sshx', 'true'));
-      } else if (port) {
-        parts.push(kv(key, port));
-      }
+        var cb = $(p.cb);
+        if (!cb.checked) return;
+        var key = p.cb.replace('cb-', '');
+        var pt = $(p.pt);
+        var port = pt ? pt.value.trim() : '';
+        var paperKey = key === 's5' ? 'paper-s5-port'
+            : key === 'vmess' ? 'paper-vmess-port'
+            : key === 'vless' ? 'paper-vless-port'
+            : key === 'hypt' ? 'paper-hy2-port'
+            : key === 'naive' ? 'paper-naive-port'
+            : key === 'anpt' ? 'paper-anytls-port'
+            : key === 'tupt' ? 'paper-tuic-port'
+            : key;
+        if (key === 'sshx') {
+            parts.push(kv('paper-sshx', 'true'));
+        } else if (port) {
+            parts.push(kv(paperKey, port));
+        }
     });
 
     var naiveUser = $('p-naive-user').value.trim();
-    if (naiveUser && naiveUser !== 'admin') parts.push(kv('naive-user', naiveUser));
+    if (naiveUser && naiveUser !== 'admin') parts.push(kv('paper-naive-user', naiveUser));
     var naivePass = $('p-naive-pass').value.trim();
-    if (naivePass) parts.push(kv('naive-pass', naivePass));
+    if (naivePass) parts.push(kv('paper-naive-pass', naivePass));
 
     var gistId = $('p-gist-id').value.trim();
     var ghToken = $('p-gist-token').value.trim();
@@ -536,24 +550,24 @@
     if (ghToken) parts.push(kv('gh-token', ghToken));
 
     var chatId = $('p-chat-id').value.trim();
-    if (chatId) parts.push(kv('chat-id', chatId));
+    if (chatId) parts.push(kv('paper-chat-id', chatId));
     var botToken = $('p-bot-token').value.trim();
-    if (botToken) parts.push(kv('bot-token', botToken));
+    if (botToken) parts.push(kv('paper-bot-token', botToken));
 
     if (name) {
-      parts.push(kv('gist-sshx-file', 'sshx_' + name + '.txt'));
-      parts.push(kv('gist-sub-file', 'sub_' + name + '.txt'));
-      var preview = $('p-gist-preview');
-      preview.textContent = '将自动生成：sshx_' + name + '.txt | sub_' + name + '.txt';
-      preview.style.display = '';
-      $('p-gist-row').classList.add('show');
-      $('p-gist-row2').classList.add('show');
+        parts.push(kv('gist-sshx-file', 'sshx_' + name + '.txt'));
+        parts.push(kv('gist-sub-file', 'sub_' + name + '.txt'));
+        var preview = $('p-gist-preview');
+        preview.textContent = '将自动生成：sshx_' + name + '.txt | sub_' + name + '.txt';
+        preview.style.display = '';
+        $('p-gist-row').classList.add('show');
+        $('p-gist-row2').classList.add('show');
     } else {
-      $('p-gist-preview').style.display = 'none';
+        $('p-gist-preview').style.display = 'none';
     }
 
     $('p-output').value = 'install=' + parts.join(' ');
-  }
+}
 
   $('p-copy').addEventListener('click', async function() {
     var t = $('p-output');
@@ -672,12 +686,60 @@ $('f-gist-preview').style.display = 'none';
     $('f-output').value = 'install=' + parts.join(' ');
   }
 
+  $('f-copy-json').addEventListener('click', async function() {
+    var json = {};
+    var uuid = $('f-uuid').value.trim();
+    if (!uuid) {
+      uuid = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/x/g, function() { return Math.floor(Math.random() * 16).toString(16); });
+    }
+    json.UUID = uuid;
+    var name = $('f-name').value.trim();
+    if (name) json.NAME = name;
+    var argoDomain = $('f-argo-domain').value.trim();
+    if (argoDomain) json.ARGO_DOMAIN = argoDomain;
+    var argoToken = $('f-argo-token').value.trim();
+    if (argoToken) json.ARGO_AUTH = argoToken;
+    var argoType = $('f-argo').value.trim();
+    if (argoType) {
+      json.ARGO_PORT = "9010";
+    }
+    var argoIp = $('f-argo-ip').value.trim();
+    if (argoIp && argoIp !== 'www.visa.com.sg') json.CFIP = argoIp;
+    if (argoIp === 'www.visa.com.sg') json.CFIP = "www.visa.com.sg";
+    var chatId = $('f-chat-id').value.trim();
+    if (chatId) json.CHAT_ID = chatId;
+    var botToken = $('f-bot-token').value.trim();
+    if (botToken) json.BOT_TOKEN = botToken;
+    fbProtos.forEach(function(p) {
+      var cb = $(p.cb);
+      if (!cb.checked) return;
+      var pt = p.pt ? $(p.pt) : null;
+      var port = pt ? pt.value.trim() : '';
+      if (!port) return;
+      var key = p.cb.replace('fb-cb-', '');
+      if (key === 'hypt') json.HY2_PORT = port;
+      else if (key === 'vless') json.VLESS_PORT = port;
+      else if (key === 'vmess') json.VMESS_PORT = port;
+      else if (key === 's5') json.S5_PORT = port;
+      else if (key === 'naive') json.NAIVE_PORT = port;
+      else if (key === 'anpt') json.ANYTLS_PORT = port;
+      else if (key === 'tupt') json.TUIC_PORT = port;
+    });
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+      showToast('JSON 已复制到剪贴板');
+    } catch(e) {
+      showToast('复制失败');
+    }
+  });
+
   $('f-copy').addEventListener('click', async function() {
     var t = $('f-output');
     t.select(); t.setSelectionRange(0, 99999);
     try { await navigator.clipboard.writeText(t.value); showToast('已复制到剪贴板'); }
     catch(e) { document.execCommand('copy'); showToast('已复制'); }
   });
+
   $('f-reset').addEventListener('click', function() { location.reload(); });
 
   renderPaper();
