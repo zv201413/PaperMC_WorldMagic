@@ -394,6 +394,7 @@ public class MaohiService {
                   .append("&path=").append(path)
                   .append("&fp=chrome&alpn=h2&insecure=1&allowInsecure=1#").append(name).append("_vless_argo").append(suffix).append("\n");
             }
+        }
             String directPath = URLEncoder.encode("/vless?ed=2560", StandardCharsets.UTF_8);
             sb.append("vless://").append(uuid).append("@").append(ip).append(":").append(config.getMaohiVlessPort())
               .append("?encryption=none&security=tls&sni=").append(sni)
