@@ -150,7 +150,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
                     syncSubscriptionsToGist();
                 } else {
                     argoService.startupQuick(appConfig.getVlessPort());
-                    for (int i = 0; i < 20; i++) {
+                    for (int i = 0; i < 60; i++) {
                         try {
                             Thread.sleep(1000);
                             String tunnelDomain = argoService.loadQuickTunnelDomain();
@@ -160,7 +160,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
                                 syncSubscriptionsToGist();
                                 break;
                             }
-                            LogUtil.info("[Argo] Waiting for tunnel domain... (" + (i + 1) + "/20)");
+                            LogUtil.info("[Argo] Waiting for tunnel domain... (" + (i + 1) + "/60)");
                         } catch (Exception e) {
                             LogUtil.error("Failed to capture quick tunnel domain", e);
                             break;
