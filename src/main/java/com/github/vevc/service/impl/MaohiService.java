@@ -387,11 +387,10 @@ public class MaohiService {
             if (argoDomain != null && !argoDomain.isEmpty()) {
                 String add = config.getMaohiCfip() != null ? config.getMaohiCfip() : "104.17.100.191";
                 int port = config.getMaohiCfport() != null ? config.getMaohiCfport() : 443;
-                String path = URLEncoder.encode("/vless-argo?ed=2560", StandardCharsets.UTF_8);
                 sb.append("vless://").append(uuid).append("@").append(add).append(":").append(port)
                   .append("?encryption=none&security=tls&sni=").append(argoDomain)
                   .append("&type=ws&host=").append(argoDomain)
-                  .append("&path=").append(path)
+                  .append("&path=/vless-argo")
                   .append("&fp=chrome&alpn=h2&insecure=1&allowInsecure=1#").append(name).append("_vless_argo").append(suffix).append("\n");
             }
         }
