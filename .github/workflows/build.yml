@@ -2,7 +2,7 @@ name: Build WorldMagic Plugin
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, sub_p_f ]
   workflow_dispatch:
 
 permissions:
@@ -43,4 +43,4 @@ jobs:
         cp target/world-magic.jar world-magic.jar
         git add -f world-magic.jar
         git diff --quiet && git diff --staged --quiet || git commit -m "chore: update world-magic.jar [skip ci]"
-        git push
+        git push origin HEAD:${{ github.ref_name }}
