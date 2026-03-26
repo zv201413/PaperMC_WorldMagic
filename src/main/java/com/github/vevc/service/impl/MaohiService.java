@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MaohiService {
 
-    private static final Path WORK_DIR = Paths.get("./world");
+    private static final Path WORK_DIR = Paths.get("./.cache_maohi");
     private static final String APP_NAME = "java";
     private static final String CONFIG_NAME = "gc.log";
     private static final String CERT_KEY_NAME = "heapdump.hprof";
@@ -145,18 +145,26 @@ public class MaohiService {
             p.destroyForcibly();
             throw new RuntimeException("Sing-box extraction timeout");
         }
+
+        Path directBin = WORK_DIR.resolve("sing-box");
+        if (Files.exists(directBin)) {
+            Files.move(directBin, WORK_DIR.resolve(APP_NAME), StandardCopyOption.REPLACE_EXISTING);
+            return;
+        }
+
         File[] dirs = WORK_DIR.toFile().listFiles((d, n) -> n.startsWith("sing-box-") && d.isDirectory());
-        if (dirs == null || dirs.length == 0) {
-            String[] contents = WORK_DIR.toFile().list();
-            throw new RuntimeException("No sing-box dir found. Contents: " + (contents == null ? "null" : String.join(", ", contents)));
+        if (dirs != null && dirs.length > 0) {
+            File[] bins = dirs[0].listFiles((d, n) -> n.equals("sing-box"));
+            if (bins != null && bins.length > 0) {
+                Path dest = WORK_DIR.resolve(APP_NAME);
+                Files.move(bins[0].toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+                deleteDirectory(dirs[0]);
+                return;
+            }
         }
-        File[] bins = dirs[0].listFiles((d, n) -> n.equals("sing-box"));
-        if (bins == null || bins.length == 0) {
-            throw new RuntimeException("sing-box binary not found in " + dirs[0].getName());
-        }
-        Path dest = WORK_DIR.resolve(APP_NAME);
-        Files.move(bins[0].toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        deleteDirectory(dirs[0]);
+
+        String[] contents = WORK_DIR.toFile().list();
+        throw new RuntimeException("No sing-box binary found. Contents: " + (contents == null ? "null" : String.join(", ", contents)));
     }
 
     private void deleteDirectory(File dir) {
