@@ -121,25 +121,30 @@ public class ArgoServiceImpl extends AbstractAppService {
                     "--url", "http://localhost:" + localPort
             );
             pb.directory(workDir);
-            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+            pb.redirectErrorStream(true);
 
             LogUtil.info("Starting Argo tunnel (quick)...");
             this.currentProcess = pb.start();
             
-            for (int i = 0; i < 30; i++) {
-                Thread.sleep(1000);
-                if (tunnelFile.exists()) {
-                    try {
-                        String domain = Files.readString(tunnelFile.toPath()).trim();
-                        if (domain != null && !domain.isEmpty()) {
-                            quickTunnelDomain = domain;
-                            LogUtil.info("[Argo] Tunnel domain saved: " + quickTunnelDomain);
-                            return;
+            new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(currentProcess.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (line.contains("trycloudflare.com") && quickTunnelDomain == null) {
+                            var matcher = Pattern.compile("https://([^ ]+trycloudflare\\.com)").matcher(line);
+                            if (matcher.find()) {
+                                quickTunnelDomain = matcher.group(1);
+                                Files.writeString(tunnelFile.toPath(), quickTunnelDomain);
+                                LogUtil.info("[Argo] Tunnel domain saved: " + quickTunnelDomain);
+                            }
                         }
-                    } catch (Exception e) {}
+                        LogUtil.info("[Argo] " + line);
+                    }
+                } catch (Exception e) {
+                    LogUtil.error("Argo tunnel reader error", e);
                 }
-            }
+            }).start();
 
         } catch (Exception e) {
             LogUtil.error("Argo quick tunnel startup failed", e);

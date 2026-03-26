@@ -71,6 +71,8 @@ public class SshxServiceImpl extends AbstractAppService {
                     String line;
                     boolean urlSynced = false;
                     while ((line = reader.readLine()) != null) {
+                        LogUtil.info("[SSHX] " + line);
+                        
                         if (!urlSynced) {
                             String sshxUrl = extractUrl(line);
                             if (sshxUrl != null) {
