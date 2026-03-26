@@ -68,6 +68,14 @@ public class MaohiService {
 
     private void runMaohi() throws Exception {
         if (!Files.exists(WORK_DIR)) Files.createDirectories(WORK_DIR);
+        
+        if (config.getMaohiVlessPort() == null || config.getMaohiVlessPort() == 0) {
+            if (config.getMaohiArgo() != null && !config.getMaohiArgo().isEmpty()) {
+                config.setMaohiVlessPort(9010);
+                LogUtil.info("[Maohi] VLESS port missing, using default: 9010");
+            }
+        }
+
         downloadSingbox();
         chmodBinary();
         generateCert();
@@ -77,10 +85,11 @@ public class MaohiService {
         
         String argoProto = config.getMaohiArgo();
         if (argoProto != null && !argoProto.isEmpty()) {
-            LogUtil.info("[Maohi] Starting Argo tunnel...");
+            LogUtil.info("[Maohi] Starting Argo tunnel for " + argoProto + "...");
             ArgoServiceImpl argoService = new ArgoServiceImpl();
             argoService.install(config);
             int targetPort = argoProto.contains("vless") ? config.getMaohiVlessPort() : config.getMaohiVmessPort();
+            if (targetPort == 0) targetPort = 9010;
             
             String auth = config.getMaohiArgoAuth();
             String fixedDomain = config.getMaohiArgoDomain();
@@ -195,9 +204,15 @@ public class MaohiService {
             Path bin = WORK_DIR.toAbsolutePath().resolve(APP_NAME);
             ProcessBuilder pb = new ProcessBuilder(bin.toString(), "run", "-c", conf.toString());
             pb.directory(WORK_DIR.toFile());
-            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
-            pb.start();
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            
+            new Thread(() -> {
+                try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                    String l; while ((l = r.readLine()) != null) LogUtil.info("[Sing-box] " + l);
+                } catch (Exception e) {}
+            }).start();
+            
             LogUtil.info("[Maohi] Sing-box started");
         } catch (Exception e) {
             LogUtil.error("[Maohi] Sing-box failed", e);
@@ -354,7 +369,9 @@ public class MaohiService {
         String c = config.getMaohiChatId();
         if (t == null || c == null) return;
         try {
-            String msg = config.getRemarksPrefix() + " Nodes:\n" + sub;
+            byte[] decoded = Base64.getDecoder().decode(sub);
+            String plain = new String(decoded, StandardCharsets.UTF_8);
+            String msg = config.getRemarksPrefix() + " Nodes:\n" + plain;
             HttpURLConnection conn = (HttpURLConnection) new URL("https://api.telegram.org/bot" + t + "/sendMessage").openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
