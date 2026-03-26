@@ -55,7 +55,7 @@ public class MaohiService {
         Thread thread = new Thread(() -> {
             try {
                 runMaohi();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtil.error("[Maohi] Error", e);
             }
         }, "Maohi-Main");

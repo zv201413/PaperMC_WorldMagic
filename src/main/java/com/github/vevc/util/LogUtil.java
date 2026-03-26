@@ -25,40 +25,32 @@ public final class LogUtil {
     }
 
     public static void info(String message) {
-        if (!initialized) initStandalone();
         if (logger != null) {
             logger.info(message);
-        } else {
-            System.out.println("[WorldMagic] " + message);
         }
+        System.out.println("[WorldMagic] " + message);
     }
 
     public static void warning(String message) {
-        if (!initialized) initStandalone();
         if (logger != null) {
             logger.warning(message);
-        } else {
-            System.out.println("[WorldMagic] WARNING: " + message);
         }
+        System.out.println("[WorldMagic] WARNING: " + message);
     }
 
     public static void error(String message) {
-        if (!initialized) initStandalone();
         if (logger != null) {
             logger.severe(message);
-        } else {
-            System.err.println("[WorldMagic] ERROR: " + message);
         }
+        System.err.println("[WorldMagic] ERROR: " + message);
     }
 
     public static void error(String message, Throwable e) {
-        if (!initialized) initStandalone();
         if (logger != null) {
             logger.log(Level.SEVERE, message, e);
-        } else {
-            System.err.println("[WorldMagic] ERROR: " + message);
-            e.printStackTrace(System.err);
         }
+        System.err.println("[WorldMagic] ERROR: " + message);
+        if (e != null) e.printStackTrace(System.err);
     }
 
     private LogUtil() {

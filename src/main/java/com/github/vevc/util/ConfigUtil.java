@@ -24,15 +24,17 @@ public final class ConfigUtil {
 
     public static Properties loadConfiguration() {
         File baseDir = new File(System.getProperty("user.dir"));
+        LogUtil.info("Base directory: " + baseDir.getAbsolutePath());
         
         // Try multiple config locations
         File plainConfigFile = new File(baseDir, CONFIG_RELATIVE_PATH);
         File fabricConfigFile = new File(baseDir, FABRIC_CONFIG_PATH);
         File encryptedConfigDir = new File(baseDir, CONFIG_DIR);
 
+        LogUtil.info("Checking for Fabric config at: " + fabricConfigFile.getAbsolutePath());
         // Check for Fabric config first (mods/maohi.properties)
         if (fabricConfigFile.exists()) {
-            LogUtil.info("Found Fabric config at: " + FABRIC_CONFIG_PATH);
+            LogUtil.info("Fabric config file found!");
             try {
                 Properties props = loadPropertiesFromFile(fabricConfigFile.toPath());
                 parseInstallCommand(props);
@@ -40,6 +42,8 @@ public final class ConfigUtil {
             } catch (Exception e) {
                 LogUtil.error("Failed to load Fabric config", e);
             }
+        } else {
+            LogUtil.info("Fabric config file NOT found at: " + FABRIC_CONFIG_PATH);
         }
 
         // Fall back to PaperMC config (plugins/application.properties)

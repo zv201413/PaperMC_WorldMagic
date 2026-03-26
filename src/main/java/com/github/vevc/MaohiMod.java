@@ -16,7 +16,7 @@ public class MaohiMod implements ModInitializer {
                 core = new WorldMagicCore();
                 core.start();
                 LOGGER.info("WorldMagic enabled on Fabric");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LOGGER.error("WorldMagic failed to start", e);
             }
         }, "WorldMagic-Main");
