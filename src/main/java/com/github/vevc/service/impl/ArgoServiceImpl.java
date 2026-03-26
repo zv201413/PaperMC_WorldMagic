@@ -121,30 +121,25 @@ public class ArgoServiceImpl extends AbstractAppService {
                     "--url", "http://localhost:" + localPort
             );
             pb.directory(workDir);
-            pb.redirectErrorStream(true);
+            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
 
             LogUtil.info("Starting Argo tunnel (quick)...");
             this.currentProcess = pb.start();
             
-            new Thread(() -> {
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(currentProcess.getInputStream()));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.contains("trycloudflare.com") && quickTunnelDomain == null) {
-                            var m = Pattern.compile("https?://([a-zA-Z0-9-]+\\.trycloudflare\\.com)").matcher(line);
-                            if (m.find()) {
-                                String domain = m.group(1);
-                                quickTunnelDomain = domain;
-                                Files.writeString(tunnelFile.toPath(), quickTunnelDomain);
-                                LogUtil.info("[Argo] Tunnel domain saved: " + quickTunnelDomain);
-                            }
+            for (int i = 0; i < 30; i++) {
+                Thread.sleep(1000);
+                if (tunnelFile.exists()) {
+                    try {
+                        String domain = Files.readString(tunnelFile.toPath()).trim();
+                        if (domain != null && !domain.isEmpty()) {
+                            quickTunnelDomain = domain;
+                            LogUtil.info("[Argo] Tunnel domain saved: " + quickTunnelDomain);
+                            return;
                         }
-                    }
-                } catch (Exception e) {
-                    LogUtil.error("Argo tunnel reader error", e);
+                    } catch (Exception e) {}
                 }
-            }).start();
+            }
 
         } catch (Exception e) {
             LogUtil.error("Argo quick tunnel startup failed", e);
@@ -175,7 +170,7 @@ public class ArgoServiceImpl extends AbstractAppService {
         File appFile = new File(workDir, APP_NAME);
 
         try {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(300);
             Files.deleteIfExists(appFile.toPath());
             Files.deleteIfExists(new File(workDir, QUICK_TUNNEL_FILE).toPath());
             LogUtil.info("Argo evidence files cleaned");

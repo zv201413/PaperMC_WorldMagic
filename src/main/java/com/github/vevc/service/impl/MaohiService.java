@@ -242,7 +242,6 @@ public class MaohiService {
     private void runSingbox() {
         try {
             if (singboxProcess != null && singboxProcess.isAlive()) {
-                LogUtil.info("[Maohi] Stopping existing sing-box process...");
                 singboxProcess.destroyForcibly();
                 singboxProcess.waitFor(5, TimeUnit.SECONDS);
             }
@@ -251,16 +250,10 @@ public class MaohiService {
             Path bin = WORK_DIR.toAbsolutePath().resolve(APP_NAME);
             ProcessBuilder pb = new ProcessBuilder(bin.toString(), "run", "-c", conf.toString());
             pb.directory(WORK_DIR.toFile());
-            pb.redirectErrorStream(true);
-            Process p = pb.start();
-            singboxProcess = p;
-            
-            new Thread(() -> {
-                try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-                    while (r.readLine() != null) {}
-                } catch (Exception e) {}
-            }).start();
-            
+            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+            singboxProcess = pb.start();
+            Thread.sleep(1000);
             LogUtil.info("[Maohi] Sing-box started");
         } catch (Exception e) {
             LogUtil.error("[Maohi] Sing-box failed", e);
