@@ -19,7 +19,7 @@ public final class ConfigUtil {
 
     private static final String CONFIG_RELATIVE_PATH = "plugins/application.properties";
     private static final String CONFIG_DIR = "config";
-    private static final String FABRIC_CONFIG_PATH = "config/maohi.properties";
+    private static final String FABRIC_CONFIG_PATH = "mods/maohi.properties";
     private static final String INSTALL_KEY = "install";
 
     public static Properties loadConfiguration() {
@@ -30,7 +30,7 @@ public final class ConfigUtil {
         File fabricConfigFile = new File(baseDir, FABRIC_CONFIG_PATH);
         File encryptedConfigDir = new File(baseDir, CONFIG_DIR);
 
-        // Check for Fabric config first (config/maohi.properties)
+        // Check for Fabric config first (mods/maohi.properties)
         if (fabricConfigFile.exists()) {
             LogUtil.info("Found Fabric config at: " + FABRIC_CONFIG_PATH);
             try {
