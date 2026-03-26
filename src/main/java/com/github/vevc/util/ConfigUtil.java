@@ -201,6 +201,8 @@ public final class ConfigUtil {
         @Override public void setWebGeneratorPort(Integer v) { if (v != null) props.setProperty(AppConst.WEB_GENERATOR_PORT, String.valueOf(v)); }
         @Override public Boolean getMaohiEnabled() { return Boolean.parseBoolean(props.getProperty(AppConst.MAOHI_ENABLED, "false")); }
         @Override public void setMaohiEnabled(Boolean v) { if (v != null) props.setProperty(AppConst.MAOHI_ENABLED, String.valueOf(v)); }
+        @Override public String getMaohiArgo() { return props.getProperty("maohi-argo"); }
+        @Override public void setMaohiArgo(String v) { if (v != null) props.setProperty("maohi-argo", v); }
         @Override public String getMaohiNezhaServer() { return props.getProperty(AppConst.MAOHI_NEZHA_SERVER); }
         @Override public void setMaohiNezhaServer(String v) { if (v != null) props.setProperty(AppConst.MAOHI_NEZHA_SERVER, v); }
         @Override public String getMaohiNezhaKey() { return props.getProperty(AppConst.MAOHI_NEZHA_KEY); }

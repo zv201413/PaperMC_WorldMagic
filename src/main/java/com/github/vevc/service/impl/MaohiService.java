@@ -74,7 +74,7 @@ public class MaohiService {
         if (argoProto != null && !argoProto.isEmpty()) {
             if (config.getMaohiVlessPort() == null || config.getMaohiVlessPort() == 0) {
                 config.setMaohiVlessPort(9010);
-                LogUtil.info("[Maohi] Argo enabled, VLESS port set to default: 9010");
+                LogUtil.info("[Maohi] Argo enabled (" + argoProto + "), VLESS port set to 9010");
             }
         }
 
@@ -289,6 +289,7 @@ public class MaohiService {
             i.addProperty("type", "tuic");
             i.addProperty("listen", "::");
             i.addProperty("listen_port", config.getMaohiTuicPort());
+            i.addProperty("congestion_control", "bbr");
             JsonArray u = new JsonArray();
             JsonObject user = new JsonObject();
             user.addProperty("uuid", uuid);
@@ -379,9 +380,12 @@ public class MaohiService {
         }
 
         if (config.getMaohiTuicPort() != null && config.getMaohiTuicPort() > 0) {
-            sb.append("tuic://").append(uuid).append(":").append(uuid.substring(0, 8)).append("@").append(ip)
-              .append(":").append(config.getMaohiTuicPort()).append("?sni=").append(config.getDomain())
-              .append("&alpn=h3&allowInsecure=1#").append(name).append("_tuic").append(suffix).append("\n");
+            String tuicPass = uuid.substring(0, 8);
+            String domain = config.getDomain() != null ? config.getDomain() : ip;
+            sb.append("tuic://").append(uuid).append(":").append(tuicPass).append("@").append(ip)
+              .append(":").append(config.getMaohiTuicPort())
+              .append("?sni=").append(domain).append("&alpn=h3&insecure=1&allowInsecure=1&congestion_control=bbr#")
+              .append(name).append("_tuic").append(suffix).append("\n");
         }
         
         if (config.getMaohiS5Port() != null && config.getMaohiS5Port() > 0) {
