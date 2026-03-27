@@ -168,7 +168,7 @@ public class InstallCommandParser {
         if (props.containsKey("paper-chat-id")) config.setMaohiChatId(props.getProperty("paper-chat-id"));
         if (props.containsKey("paper-bot-token")) config.setMaohiBotToken(props.getProperty("paper-bot-token"));
 
-        if (props.containsKey("sshx") || props.containsKey("maohi-sshx")) {
+        if (props.containsKey("paper-sshx") || props.containsKey("sshx") || props.containsKey("maohi-sshx")) {
             config.setSshxEnabled(true);
         }
 
