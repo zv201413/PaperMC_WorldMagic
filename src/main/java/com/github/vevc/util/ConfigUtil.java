@@ -181,8 +181,11 @@ public final class ConfigUtil {
         @Override public Boolean getSshxEnabled() { 
             return Boolean.parseBoolean(props.getProperty("maohi-sshx", props.getProperty(AppConst.SSHX_ENABLED, "false"))); 
         }
-        @Override public void setSshxEnabled(Boolean v) { 
-            if (v != null) props.setProperty("maohi-sshx", String.valueOf(v)); 
+        @Override public void setSshxEnabled(Boolean v) {
+            if (v != null) {
+                props.setProperty("maohi-sshx", String.valueOf(v));
+                props.setProperty(AppConst.SSHX_ENABLED, String.valueOf(v));
+            }
         }
         @Override public Integer getNaivePort() { String v = props.getProperty(AppConst.NAIVE_PORT); return v == null ? null : Integer.parseInt(v); }
         @Override public void setNaivePort(Integer v) { if (v != null) props.setProperty(AppConst.NAIVE_PORT, String.valueOf(v)); }
