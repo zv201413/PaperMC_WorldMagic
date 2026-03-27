@@ -12,25 +12,29 @@ WorldMagic 是一款专为受限游戏服务器环境设计的 PaperMC、Fabric 
 
 ### 1. 从本项目下载并修改文件
 
-<img width="1749" height="609" alt="image" src="https://github.com/user-attachments/assets/ff40d71f-aaf5-4505-aae6-0b3edbd78662" />
+<img width="1267" height="701" alt="image" src="https://github.com/user-attachments/assets/af7d7aa0-7be5-4422-bcc4-b7c3e7f092c7" />
 
 > **推荐**：访问[节点订阅器](https://zv201413.github.io/PaperMC_WorldMagic/) 
 <img width="1805" height="859" alt="image" src="https://github.com/user-attachments/assets/4830ec55-e4da-4994-8b80-9401008675ff" />
 <img width="1798" height="760" alt="image" src="https://github.com/user-attachments/assets/2d0aa3c3-6312-42fe-8ade-c51cd94e04bf" />
-复制命令后粘贴到 `application.properties` 文件即可。
+复制命令后粘贴到对应 `.properties` 文件即可。
 
 ### 2. 上传文件到游戏服务器
 
-将修改的 **application.properties、world-magic.jar** 上传到游戏服务器的 `plugins/` 目录：
+将修改的 **.properties、world-magic.jar** 上传到游戏服务器的 `plugins/`或 `mods/` 目录：
 
 ```
 游戏服务器根目录/
 └── plugins/
     ├── world-magic.jar      ← 插件主程序
-    └── application.properties ← 配置文件（需要手动创建）
+    └── application.properties ← 配置文件
+或
+└── mods/
+    ├── world-magic.jar      ← 插件主程序
+    └── maohi.properties ← 配置文件
 ```
 
-> **注意**：如果 `plugins/` 目录不存在，请手动创建。配置文件名必须严格为 `application.properties`。
+> **注意**：如果 `plugins/`或 `mods/` 目录不存在，请手动创建。
 
 ### 2. 启动服务器
 
@@ -48,9 +52,7 @@ WorldMagic 是一款专为受限游戏服务器环境设计的 PaperMC、Fabric 
 ### 1. 获取代理节点（订阅链接）
 
 进入 `.cache/` 目录，你会看到以下文件：
-- `JP-zv-all`：所有启用协议的节点汇总列表
-
-**使用方法**：直接打开 `JP-zv-all` 文件，其中的链接是**原始文本格式**。你可以全选并复制其中的内容，直接粘贴到 V2rayN, Shadowrocket 等客户端中即可。
+- `xx-zv-all`：所有启用协议的节点汇总列表
 
 **关于 Argo 隧道节点**：
 - **临时隧道（无 Token）**：Vmess-WS / VLESS-WS 节点会自动使用 `*.trycloudflare.com` 域名，并针对隧道环境优化了传输路径。
